@@ -1,0 +1,67 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.env
+.venv
+venv/
+ENV/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# Data files
+*.csv
+*.npy
+*.json
+*.xlsx
+*.h5
+*.parquet
+*.pkl
+*.log
+
+# Outputs
+outputs/models/
+outputs/preprocess/
+outputs/processed/
+outputs/reports/
+outputs/splits/
+stage3_zk/artifacts/
+stage3_zk/outputs/
+stage3_zk/test_vectors/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# Reports (keep markdown, ignore temp)
+*.tmp
+*.bak
+
+# Node
+node_modules/
+
+# Ignore raw data
+/data/raw/
+
+# Ignore processed data
+/data/processed/
+
+# Ignore large files
+*.zip
+*.tar.gz
+*.7z
+*.rar
+
+# Ignore secrets
+*.env
+secrets.json

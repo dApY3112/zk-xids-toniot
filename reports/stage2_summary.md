@@ -1,0 +1,96 @@
+# Stage 2: Top-k Explainability — Summary Report
+
+## 1. Objective
+Stage 2 demonstrates that the IDS provides not only an attack/normal prediction, but also a per-sample explanation: the **top-k** most influential input features driving each decision. The analysis evaluates:
+- **Stability** (within-model consistency across samples)
+- **Overlap** (agreement between LogReg vs XGBoost explanations)
+- **Semantic stability/overlap** after grouping features into high-level categories (used later in Stage 3)
+
+## 2. Dataset & Setup
+
+### a. Data source
+- Inputs come from the Stage 1/2 pipeline with manifest mode: `processed_stratified_sample_23files_frac0.15`.
+- Sampling: **15% from each of 23 processed files** (`sample_frac=0.15`, `random_state=42`).
+- Split strategy: **stratified 70/15/15** (attack ratio preserved across splits).
+
+### b. Models evaluated
+Baseline models (trained in Stage 1) are used to generate explanations:
+- **Logistic Regression (LogReg):** uses `class_weight="balanced"` to mitigate heavy class imbalance.
+- **XGBoost (XGB):** tree-based baseline.
+
+For reference, baseline performance on the test set (from `outputs/reports/baseline_metrics.json`):
+- **XGB:** accuracy=0.9991, precision=0.9994, recall=0.9996, PR-AUC=1.0000, FNR=0.00037
+- **LogReg:** accuracy=0.9342, precision=0.9965, recall=0.9350, PR-AUC=0.9987, FNR=0.06499
+
+## 3. Explanation Method
+
+### a. Per-sample feature contribution
+For each selected sample, we compute absolute contributions and take the top-k largest:
+- **LogReg:** contribution per feature is $|w_i x_i|$
+- **XGB:** SHAP-like feature contributions from `pred_contribs=True` (absolute value)
+
+### b. Top-k configuration
+- **k = 5**
+- Subset analyzed: **1100 samples** (from `outputs/stage2/stability_summary.json`)
+
+## 4. Key Results
+
+### a. Stability (within-model)
+Mean pairwise Jaccard similarity of top-5 sets across the analyzed subset (`outputs/stage2/stability_summary.json`):
+- **LogReg stability:** 0.5847
+- **XGB stability:** 0.4075
+
+Interpretation: LogReg explanations are more consistent across samples than XGB at the raw feature level.
+
+### b. Overlap (between models)
+Jaccard similarity between LogReg vs XGB top-5 sets (`outputs/stage2/overlap_summary.json`):
+- **Mean overlap:** 0.1558
+- **Std:** 0.0820
+
+Interpretation: the two models often rely on different specific features, even when predicting the same class.
+
+### c. Semantic stability (grouped explanations)
+After mapping features into semantic groups (Protocol / Application / ConnectionState / Ports / TrafficVolume), stability increases significantly (`outputs/stage2/semantic_stability_summary.json`):
+- **Semantic stability (LogReg):** 0.7794
+- **Semantic stability (XGB):** 0.7429
+
+Interpretation: although raw top-k differs, both models are more consistent when viewed at a higher semantic level.
+
+### d. Semantic overlap (between models)
+Semantic-level agreement also improves (`outputs/stage2/semantic_overlap_summary.json`):
+- **Mean semantic overlap:** 0.3012
+- **Std:** 0.1468
+
+### e. Semantic group frequency patterns
+Frequency of semantic groups appearing in the top-k across the analyzed subset:
+
+**LogReg** (`outputs/stage2/semantic_group_frequency_logreg.csv`)
+- Application: 100.00%
+- Protocol: 99.91%
+- ConnectionState: 45.55%
+- Ports: 6.36%
+- TrafficVolume: 6.18%
+
+**XGB** (`outputs/stage2/semantic_group_frequency_xgb.csv`)
+- TrafficVolume: 99.55%
+- Ports: 95.91%
+- Protocol: 74.82%
+- ConnectionState: 66.64%
+- Application: 7.00%
+
+Interpretation: LogReg explanations are dominated by **Application/Protocol** indicators, while XGB is dominated by **TrafficVolume/Ports** indicators.
+
+## 5. Artifacts Produced
+Stage 2 outputs are saved under `outputs/stage2/`:
+- `topk_logreg.npy`, `topk_xgb.npy`: top-k feature indices per sample
+- `top10_frequency_logreg.csv`, `top10_frequency_xgb.csv`: aggregated feature frequency
+- `stability_summary.json`, `overlap_summary.json`: raw feature stability/overlap stats
+- `semantic_stability_summary.json`, `semantic_overlap_summary.json`: semantic stability/overlap stats
+- `semantic_group_frequency_logreg.csv`, `semantic_group_frequency_xgb.csv`: semantic group frequency
+
+## 6. Relevance to Stage 3
+Stage 3 uses the semantic-group view to make explanations more compact and ZK-circuit friendly: proving properties about **group-level rankings** is much cheaper than proving a full top-k over one-hot expanded features.
+
+---
+
+*For implementation details, see notebook `05_stage2_topk_explainability.ipynb` and the generated artifacts in `outputs/stage2/`.*
