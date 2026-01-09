@@ -1,9 +1,10 @@
 # Stage 3: Zero-Knowledge Privacy-Preserving Intrusion Detection System
 ## Final Technical Report
 
-**Date**: December 28, 2025  
+**Date**: January 7, 2026  
 **Author**: Master's Thesis Research  
 **ZK Stack**: Circom 2.1.9, Groth16, snarkjs 0.7.5  
+**Feature Count**: **104** (upgraded from 87)
 
 ---
 
@@ -82,6 +83,8 @@ b_shifted = b + B              // Now in [0, 2×B]
 
 // Recover signed values inside circuit
 x[i] <== x_shifted[i] - maxAbsX
+```
+
 **Bounds Selection**:
 
 | Parameter | Value | Justification |
@@ -91,7 +94,6 @@ x[i] <== x_shifted[i] - maxAbsX
 | B | 2^36 = 68.7B | Upper bound for score range |
 | Bc | 2^46 = 70.4T | Bound for intermediate contributions |
 | BG | 2^53 = 9.0P | Bound for semantic group sums |
-```
 
 ### 2.2 Performance
 
@@ -158,7 +160,7 @@ z[i] * (z[i] - 1) === 0;
 Optimized Implementation:
 
 Proving time: 486ms (initial optimization)
-Removed 87 redundant bound checks + 87 binary checks
+Removed redundant checks (one per feature): 104 bound checks + 104 binary checks
 Improvement: -41% proving time
 Final Benchmark (reported in benchmark_stage32.json):
 
@@ -335,19 +337,23 @@ correct_other2 = [4, 5]   # Ports, TrafficVolume
 fake_top3 = [2, 3, 4]     # Replace Protocol with Ports
 fake_other2 = [1, 5]      # Move Protocol to "others"
 Result
-[INFO]  snarkJS: Assert Failed. TraceBack:
+```text
+[INFO] snarkJS: Assert Failed. TraceBack:
 top3_explanation.circom:302:12
-nalysis: Circuit correctly rejected at Line 302: dominance constraint
+```
+
+Analysis: Circuit correctly rejected at Line 302: dominance constraint
 
 G[1] (Protocol) = 906M > G[4] (Ports) = 195M
 Dominance check failed: G_mapped[2] (Ports) ≥ G_mapped[3] (Protocol) ⟹ False
 Conclusion: Adversary cannot forge fake explanation ✅
 
 #### Test 2: Robustness Across Prediction Classes
-Sample	Type	y_true	y_pred	Top-3 Explanation	Proof Status
-1	TP (attack detected)	1	1	[2, 3, 1]	✅ Valid
-2	TN (normal traffic)	0	0	[2, 3, 1]	✅ Valid
-3	FN (attack missed)	1	0	[2, 3, 1]	✅ Valid
+| Sample | Type | y_true | y_pred | Top-3 Explanation | Proof Status |
+|--------|------|--------|--------|------------------|-------------|
+| 1 | TP (attack detected) | 1 | 1 | [2, 3, 1] | ✅ Valid |
+| 2 | TN (normal traffic) | 0 | 0 | [2, 3, 1] | ✅ Valid |
+| 3 | FN (attack missed) | 1 | 0 | [2, 3, 1] | ✅ Valid |
 Observations:
 
 #### Test 3: Malicious Witness Attack
@@ -523,7 +529,7 @@ snarkjs groth16 verify verification_key.json public.json proof.json
 Script: 01_prepare_input_stage33.py
 # 1. Compute semantic groups (private)
 G = [0] * 5
-for i in range(87):
+for i in range(104):
     g = group_id[i] - 1  # Convert to 0-indexed
     G[g] += abs(w[i] * x[i])
 
@@ -649,7 +655,7 @@ validates that the circuit does not trivially output fixed values.
 Bandwidth:
 
 Proof size: ~1KB (Groth16 fixed size)
-Public input: ~400 bytes (87 weights + bias + y_hat + top3_ids)
+Public input: ~400 bytes (104 weights + bias + y_hat + top3_ids)
 Total per inference: <2KB
 Throughput:
 
@@ -888,6 +894,6 @@ End of Report
 Document Metadata:
 
 Version: 1.0 (Final)
-Last Updated: December 28, 2025
+Last Updated: January 7, 2026
 Total Pages: 18
 Word Count: ~6,800
