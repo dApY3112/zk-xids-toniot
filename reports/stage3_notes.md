@@ -8,26 +8,26 @@ This stage implements a privacy-preserving explainability layer using zero-knowl
 ## 1. Frozen Parameters (from Stage 1 & 2)
 
 ### Feature Vector
-- **n = 87 features** (frozen from preprocessing pipeline)
-- Feature order: `artifacts/feature_order.json`
+- **n = 104 features** (frozen from preprocessing pipeline)
+- Feature order: `stage3_zk/artifacts/feature_order.json`
 - Feature schema:
   - 12 numeric features (duration, bytes, packets, ports)
-  - 9 categorical features (one-hot encoded → 75 features)
+  - 9 categorical features (one-hot encoded → 87 features)
   - 5 boolean features (DNS/SSL flags)
 
 ### Model (Logistic Regression)
-- Weights: **w ∈ ℝ^87**
+- Weights: **w ∈ ℝ^104**
 - Bias: **b ∈ ℝ**
 - Decision rule: `y_hat = 1 if score >= 0 else 0`, where `score = Σ(w[i] * x[i]) + b`
 
 ### Semantic Groups (5 groups)
-1. **Protocol** (group_id=1): `proto_icmp`, `proto_tcp`, `proto_udp`
-2. **Application** (group_id=2): `service_*`, `http_*`, `ssl_*`, `dns_*`, `weird_*`
-3. **ConnectionState** (group_id=3): `conn_state_*` (REJ, SF, S0, etc.)
-4. **Ports** (group_id=4): `src_port`, `dst_port`
-5. **TrafficVolume** (group_id=5): `*_bytes`, `*_pkts`, `duration`, etc.
+1. **Protocol** (group_id=1, 3 features): `proto_icmp`, `proto_tcp`, `proto_udp`
+2. **Application** (group_id=2, 76 features): `service_*`, `http_*`, `ssl_*`, `dns_*`, `weird_*`
+3. **ConnectionState** (group_id=3, 13 features): `conn_state_*` (REJ, SF, S0, etc.)
+4. **Ports** (group_id=4, 2 features): `src_port`, `dst_port`
+5. **TrafficVolume** (group_id=5, 10 features): `*_bytes`, `*_pkts`, `duration`, etc.
 
-Mapping: `artifacts/group_map.json`
+Mapping: `stage3_zk/artifacts/group_map.json`
 
 ---
 
@@ -50,24 +50,36 @@ y_hat = (score_int >= 0) ? 1 : 0
 
 **Note:** The scales `Sx` and `Sw` are public constants embedded in the circuit.
 
+### Signed values inside ZK circuits (implementation detail)
+Circom/snarkjs interpret JSON integers modulo the field prime, so negative integers cannot be range-checked directly as “signed ints”.
+The Stage 3 circuits therefore use **shifted-input encoding** for robustness:
+
+- Witness uses `x_shifted[i] = x_int[i] + maxAbsX` (so `x_shifted` is always non-negative)
+- In-circuit, recover `x_int[i] = x_shifted[i] - maxAbsX` and apply defensive range checks
+
+Reference bounds and constants come from `stage3_zk/artifacts/bounds.json`.
+
 ---
 
 ## 3. Bounds (for ZK Field Constraints)
 
-From test set analysis (`artifacts/bounds.json`):
+Note: Any constraint counts, timings, or proof-size numbers in this note are rough planning estimates. The authoritative, reproducible measurements are captured by:
+- `stage3_zk/reports/LATEST_REPRO_REPORT.md` (Complexity & Communication + Results)
 
-- **max(|x_int|)**: 67,995,696 (~26 bits)
-- **max(|w_int|)**: 68,314 (~17 bits)
-- **max(|score_int|)**: 33,683,198,924 (~35 bits)
+From test set analysis (`stage3_zk/artifacts/bounds.json`):
+
+- **max(|x_int|)**: 297,270,816 (~29 bits)
+- **max(|w_int|)**: 122,130 (~17 bits)
+- **max(|score_int|)**: 22,988,183,559 (~35 bits)
 
 These bounds must fit within the ZK field (typically ~254 bits for BN254 curve, common in zkSNARKs).
 
-**Verification:** All bounds < 2^36 (safe margin of 218 bits for 254-bit field).
+**Verification:** All bounds < 2^36 (safe margin of ~218 bits for a 254-bit field).
 
 ### Bit Budget Analysis
 Field size (BN254): 254 bits
 Max score: 35 bits
-Max intermediate: 43 bits (x_int * w_int per feature)
+Max intermediate: ~46 bits (x_int * w_int per feature)
 Safety margin: 211 bits ✅
 
 ---
@@ -78,23 +90,21 @@ Safety margin: 211 bits ✅
 **Goal:** Prove `y_hat` is computed correctly from private `x` and public `w, b`.
 
 **Public Inputs:**
-- `w_int[87]`, `b_int` (model parameters)
+- `w_int[104]`, `b_int` (model parameters)
 - `Sx`, `Sw` (scales)
 - `y_hat` (predicted label: 0 or 1)
 
 **Private Witness:**
-- `x_int[87]` (quantized feature vector)
+- `x_int[104]` (quantized feature vector; implemented as shifted witness `x_shifted[104]` in circuits)
 
 **Constraints:**
-score = Σ(w_int[i] * x_int[i]) + b_int // 87 multiplications + 86 additions
+score = Σ(w_int[i] * x_int[i]) + b_int // 104 multiplications + 103 additions
 y_hat == (score >= 0) // sign check
 
 **Challenge:** Implementing `>=` comparison in ZK (use range proofs or bit decomposition).
 
-**Estimated Complexity:**
-- Constraints: ~500-1000 (depends on comparison gadget)
-- Proof size: ~200-300 bytes (Groth16)
-- Proving time: ~0.5-2 seconds (CPU)
+**Current measured complexity:** see `stage3_zk/reports/LATEST_REPRO_REPORT.md`.
+Latest harness report: 3,831 constraints, proof JSON about 805 bytes, and per-sample prove steps around 1.0s in the CLI harness.
 
 ---
 
@@ -105,24 +115,7 @@ y_hat == (score >= 0) // sign check
 - (optional) `G[1..5]` — group contribution sums
 
 **Additional Constraints:**
-
-**Challenge:** Implementing `>=` comparison in ZK (use range proofs or bit decomposition).
-
-**Estimated Complexity:**
-- Constraints: ~500-1000 (depends on comparison gadget)
-- Proof size: ~200-300 bytes (Groth16)
-- Proving time: ~0.5-2 seconds (CPU)
-
----
-
-### Level 2: Inference + Group Aggregation
-**Goal:** Prove `y_hat` + compute semantic group contributions `G[1..5]`.
-
-**Additional Public Inputs:**
-- (optional) `G[1..5]` — group contribution sums
-
-**Additional Constraints:**
-For each i in [0..86]:
+For each i in [0..103]:
 c[i] = w_int[i] * x_int[i] // contribution per feature
 abs_c[i] = |c[i]| // absolute value
 gid = group_id[i] // constant from group_map.json
@@ -132,10 +125,8 @@ G[gid] += abs_c[i] // accumulate by group
 - Introduce sign bit `z ∈ {0,1}`
 - Enforce: `abs_c = (1 - 2z) * c` and `abs_c >= 0`
 
-**Estimated Complexity:**
-- Constraints: ~2000-3000 (adds ~87 abs() gadgets)
-- Proof size: ~250-350 bytes
-- Proving time: ~2-5 seconds
+**Current measured complexity:** see `stage3_zk/reports/LATEST_REPRO_REPORT.md`.
+Latest harness report: 17,684 constraints, proof JSON about 805 bytes, and per-sample prove steps around 1.3-1.5s in the CLI harness.
 
 ---
 
@@ -147,7 +138,7 @@ G[gid] += abs_c[i] // accumulate by group
 - `top3_groups = (g1, g2, g3)` where each `g ∈ {1,2,3,4,5}`
 
 **Private Witness:**
-- `x_int[87]`
+- `x_int[104]` (implemented as shifted witness in circuits)
 - `g4, g5` (the 2 remaining groups, private)
 
 **Constraints:**
@@ -169,10 +160,8 @@ G[g1] >= G[g2] >= G[g3] // enforce descending order
 
 **Why this works:** With only 5 groups, permutation check is lightweight (no need for complex sorting networks).
 
-**Estimated Complexity:**
-- Constraints: ~3000-4000 (adds ~20 comparisons + permutation check)
-- Proof size: ~300-400 bytes
-- Proving time: ~5-10 seconds
+**Current measured complexity:** see `stage3_zk/reports/LATEST_REPRO_REPORT.md`.
+Latest harness report: 18,719 constraints, proof JSON about 803 bytes, and per-sample prove steps around 1.3-1.5s in the CLI harness.
 
 ---
 
@@ -205,25 +194,23 @@ These 3 conditions + distinctness guarantee permutation.
 
 ---
 
-## 6. Benchmark Plan
+## 6. Current Benchmark Sources
 
-Measure performance for each circuit level:
+Use these reports instead of the older planning estimates:
 
-| Circuit Level          | Proof Gen (ms) | Verify (ms) | Proof Size (KB) | Notes |
-|------------------------|----------------|-------------|-----------------|-------|
-| Inference Only         | TBD            | TBD         | TBD             | Baseline |
-| + Group Aggregation    | TBD            | TBD         | TBD             | +abs() overhead |
-| + Top-3 Constraint     | TBD            | TBD         | TBD             | Full explainability |
+| Report | What to use it for |
+|---|---|
+| `stage3_zk/reports/LATEST_REPRO_REPORT.md` | Current circuit constraints, wires, public/private inputs, artifact sizes, proof sizes, and full build/witness/prove/verify status |
+| `stage3_zk/reports/zk_scaling_benchmark.md` | Repeated Stage 3.3 prove/verify timing summary with p50/p95 |
 
-**Test hardware:** [TO BE FILLED: CPU model, RAM, GPU if used]
+Latest Stage 3.3 repeated benchmark summary:
 
-**Measurement method:**
-- Average over 100 proofs per level
-- Use test vectors from `test_vectors/` (TP, TN, FN samples)
-- Measure:
-  - Proof generation time (prover computation)
-  - Verification time (verifier computation)
-  - Proof size (bytes on disk/network)
+| Step | Mean ms | p50 ms | p95 ms |
+|---|---:|---:|---:|
+| prepare_input | 77 | 70 | 109 |
+| witness_smoke | 87 | 78 | 150 |
+| prove | 1,532 | 1,484 | 1,847 |
+| verify | 588 | 562 | 696 |
 
 ---
 
@@ -260,13 +247,13 @@ Measure performance for each circuit level:
 
 ## 9. Reproducibility
 
-All artifacts frozen in `artifacts/`:
-- **feature_order.json** — 87 features in fixed order
+All ZK artifacts are frozen in `stage3_zk/artifacts/`:
+- **feature_order.json** — 104 features in fixed order
 - **group_map.json** — 5 semantic groups (Protocol, Application, ConnectionState, Ports, TrafficVolume)
-- **model_public.json** — quantized weights (w_int[87], b_int, scales)
+- **model_public.json** — quantized weights (w_int[104], b_int, scales)
 - **bounds.json** — field constraints (max values for safe arithmetic)
 
-Test vectors in `test_vectors/` for circuit validation:
+Test vectors in `stage3_zk/test_vectors/` for circuit validation:
 - **test_sample_1.json** — True Positive attack (correctly detected)
 - **test_sample_2.json** — True Negative normal traffic
 - **test_sample_3.json** — False Negative attack (missed, for analysis)
@@ -276,24 +263,23 @@ Test vectors in `test_vectors/` for circuit validation:
 ## 10. Implementation Roadmap
 
 ### Phase 1: Circuit Development (Week 1-2)
-- [ ] Implement Level 1 (inference only) in Circom/Noir
-- [ ] Test with `test_sample_1.json`
-- [ ] Verify proof generation and verification work
+- [x] Implement Stage 3.1 (inference only) in Circom (see `stage3_zk/circuits/inference_only/`)
+- [x] Test with `test_sample_1.json`
+- [x] Verify proof generation and verification work
 
 ### Phase 2: Group Aggregation (Week 3)
-- [ ] Add abs() gadget for contribution computation
-- [ ] Implement group accumulation logic
-- [ ] Test with all 3 test vectors
+- [x] Implement Stage 3.2 semantic aggregation (see `stage3_zk/circuits/semantic_groups/`)
+- [x] Test with all 3 test vectors
 
 ### Phase 3: Top-3 Constraint (Week 4)
-- [ ] Implement permutation check
-- [ ] Add top-3 comparison constraints
-- [ ] End-to-end test
+- [x] Implement Stage 3.3 top-3 verification (see `stage3_zk/circuits/top3_explanation/`)
+- [x] Add dominance + permutation constraints
+- [x] End-to-end tests (including wrong-explanation rejection)
 
 ### Phase 4: Benchmarking (Week 5)
-- [ ] Run 100 proofs per level
-- [ ] Collect timing and size metrics
-- [ ] Fill in benchmark table (Section 6)
+- [x] Run 100 proofs per level
+- [x] Collect timing and size metrics
+- [x] Reported in `stage3_zk/reports/FINAL_SUMMARY.md`
 
 ### Phase 5: Thesis Writing (Week 6+)
 - [ ] Document results
@@ -302,6 +288,6 @@ Test vectors in `test_vectors/` for circuit validation:
 
 ---
 
-**Last Updated:** December 28, 2025  
-**Pipeline Version:** Stage 1 (processed_subset_3, 3M samples) → Stage 2 (k=5 explainability) → Stage 3 (ZK circuits)  
-**Status:** Artifacts ready ✅ | Circuits pending implementation
+**Last Updated:** February 3, 2026  
+**Pipeline Version:** Stage 1 (processed_stratified_sample_23files_frac0.15) → Stage 2 (k=5 explainability) → Stage 3 (ZK circuits, n=104)  
+**Status:** Artifacts ready ✅ | Circuits implemented ✅ | Benchmarks reported ✅

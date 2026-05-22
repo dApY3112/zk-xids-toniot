@@ -32,8 +32,8 @@ VERIFY_TIME=$(( ($(date +%s%N) - START) / 1000000 ))
 
 echo ""
 echo "============================================"
-echo "✅ Verification Complete!"
+echo " Verification Complete!"
 echo "============================================"
 echo "Verify time: ${VERIFY_TIME}ms"
 echo ""
-echo "Result: VALID ✅"
+echo "Result: VALID "

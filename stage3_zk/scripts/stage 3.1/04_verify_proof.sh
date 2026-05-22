@@ -15,7 +15,7 @@ PUBLIC="outputs/proofs/public_sample_${SAMPLE_ID}.json"
 
 # Check files exist
 if [ ! -f "$PROOF" ]; then
-    echo "❌ ERROR: Proof not found at $PROOF"
+    echo "ERROR: Proof not found at $PROOF"
     exit 1
 fi
 
@@ -32,8 +32,8 @@ VERIFY_TIME=$(( ($(date +%s%N) - START) / 1000000 ))
 
 echo ""
 echo "============================================"
-echo "✅ Verification Complete!"
+echo "Verification Complete!"
 echo "============================================"
 echo "Verify time: ${VERIFY_TIME}ms"
 echo ""
-echo "Result: VALID ✅"
+echo "Result: VALID"

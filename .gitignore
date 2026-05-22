@@ -17,24 +17,57 @@ ENV/
 .ipynb_checkpoints/
 
 # Data files
-*.csv
 *.npy
-*.json
 *.xlsx
 *.h5
 *.parquet
 *.pkl
 *.log
 
-# Outputs
+# Large tabular datasets should stay out of git. Thesis-facing CSV outputs
+# under outputs/explainability are intentionally allowed unless covered by
+# a more specific generated-output rule below.
+data/**/*.csv
+outputs/**/*.csv
+!outputs/explainability/
+!outputs/explainability/*.csv
+
+# Outputs (generated)
 outputs/models/
-outputs/preprocess/
-outputs/processed/
 outputs/reports/
 outputs/splits/
-stage3_zk/artifacts/
+
+# Keep small, thesis-critical JSON manifests for reproducibility
+outputs/preprocess/*
+!outputs/preprocess/feature_names.json
+!outputs/preprocess/feature_schema.json
+
+outputs/processed/*
+!outputs/processed/feature_order.json
+
+# Stage 2 outputs are generated (figures/summaries) and can be reproduced
+outputs/stage2/
+
+# Stage 3 (ZK): keep artifacts and test vectors; ignore generated build/proof outputs
 stage3_zk/outputs/
-stage3_zk/test_vectors/
+stage3_zk/circuits/**/build/
+
+# ZK generated artifacts that should stay out of source control
+*.r1cs
+*.sym
+*.wtns
+*.zkey
+*.ptau
+proof.json
+public.json
+witness.wtns
+*_js/
+
+# Ignore timestamped evidence runs; keep stable LATEST report files
+stage3_zk/reports/repro_run_*.md
+stage3_zk/reports/repro_run_*.json
+!stage3_zk/reports/LATEST_REPRO_REPORT.md
+!stage3_zk/reports/LATEST_REPRO_REPORT.json
 
 # OS
 .DS_Store

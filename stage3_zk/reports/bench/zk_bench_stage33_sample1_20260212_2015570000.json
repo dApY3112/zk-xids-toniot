@@ -1,0 +1,142 @@
+{
+  "started_at_utc": "2026-02-12T20:15:57+00:00",
+  "finished_at_utc": "2026-02-12T20:15:59+00:00",
+  "duration_ms": 2733,
+  "args": {
+    "stage": "33",
+    "samples": [
+      1
+    ],
+    "build": false,
+    "clean": false,
+    "no_witness_smoke": false,
+    "prove": true,
+    "verify": true,
+    "validate_proofs": true
+  },
+  "environment": {
+    "os": {
+      "platform": "Windows-10-10.0.26100-SP0",
+      "system": "Windows",
+      "release": "10",
+      "version": "10.0.26100",
+      "machine": "AMD64",
+      "python_implementation": "CPython"
+    },
+    "python": {
+      "executable": "C:\\Anaconda\\envs\\py310\\python.exe",
+      "version": "3.10.19",
+      "version_full": "3.10.19 | packaged by conda-forge | (main, Oct 22 2025, 22:23:22) [MSC v.1944 64 bit (AMD64)]"
+    },
+    "node": {
+      "version": "v20.12.2",
+      "npm_version": "10.8.3"
+    },
+    "snarkjs": {
+      "command": [
+        "C:\\Paper\\Masters thesis\\stage3_zk\\node_modules\\.bin\\snarkjs.cmd"
+      ],
+      "version": "snarkjs@0.7.5"
+    },
+    "git": {
+      "commit": "f5416a6096577a87368753df32901620c81cfcc3"
+    }
+  },
+  "circuit_stats": {
+    "33": {
+      "stage": "33",
+      "circuit": "top3_explanation",
+      "r1cs": {
+        "path": "circuits\\top3_explanation\\build\\top3_explanation.r1cs",
+        "size_bytes": 2927208
+      },
+      "wasm": {
+        "path": "circuits\\top3_explanation\\build\\top3_explanation_js\\top3_explanation.wasm",
+        "size_bytes": 137026
+      },
+      "zkey_final": {
+        "path": "circuits\\top3_explanation\\build\\top3_explanation_final.zkey",
+        "size_bytes": 10088775
+      },
+      "verification_key": {
+        "path": "circuits\\top3_explanation\\build\\verification_key.json",
+        "size_bytes": 22685
+      },
+      "r1cs_info": {
+        "curve": "bn-128",
+        "wires": 18043,
+        "constraints": 18719,
+        "private_inputs": 106,
+        "public_inputs": 109,
+        "labels": 20018,
+        "outputs": 0,
+        "source": "snarkjs r1cs info"
+      },
+      "proofs": [
+        {
+          "sample": 1,
+          "proof": {
+            "path": "outputs\\proofs\\proof_stage33_sample_1.json",
+            "size_bytes": 803
+          },
+          "public": {
+            "path": "outputs\\proofs\\public_stage33_sample_1.json",
+            "size_bytes": 1178,
+            "n_public_signals": 109
+          }
+        }
+      ]
+    }
+  },
+  "steps": [
+    {
+      "name": "prepare_input_stage33_sample1",
+      "ok": true,
+      "skipped": false,
+      "duration_ms": 93,
+      "details_tail": "OK: Prepared circuit input: C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\top3_explanation\\build\\input_sample_1.json\n   Sample: TP_attack\n   Features: 104\n   Score: 390139428\n   y_hat: 1 (0=normal, 1=attack)\n   x_shifted range: [297240695, 297336352]\n   w_shifted range: [0, 163550]\n   b_shifted: 68188932562\n   Bound checks: OK\n\n   Semantic Groups (sorted by contribution):\n   * [1] Group 2 Application         : 2,404,909,056\n   * [2] Group 1 Protocol            : 765,722,624\n   * [3] Group 5 TrafficVolume       : 88,863,615\n     [4] Group 4 Ports               : 58,746,793\n     [5] Group 3 ConnectionState     : 57,540,608\n\n   Top-3 explanation (public): [2, 1, 5]\n   Other 2 groups (private):   [4, 3]"
+    },
+    {
+      "name": "witness_smoke_stage33_sample1",
+      "ok": true,
+      "skipped": false,
+      "duration_ms": 78,
+      "details_tail": ""
+    },
+    {
+      "name": "prove_stage33_sample1",
+      "ok": true,
+      "skipped": false,
+      "duration_ms": 1421,
+      "details_tail": ""
+    },
+    {
+      "name": "verify_stage33_sample1",
+      "ok": true,
+      "skipped": false,
+      "duration_ms": 531,
+      "details_tail": "\u001b[32;22m[INFO]  \u001b[39;1msnarkJS\u001b[0m: OK!"
+    },
+    {
+      "name": "stage33_wrong_explanation_sample1",
+      "ok": true,
+      "skipped": false,
+      "duration_ms": 140,
+      "details_tail": "============================================================\nTESTING WRONG EXPLANATION (Should FAIL)\n============================================================\n\nOriginal top3: [2, 1, 5]\nOriginal other2: [4, 3]\n\nWRONG top3: [2, 1, 4]\nWRONG other2: [5, 3]\n\nOK: Created wrong input: C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\top3_explanation\\build\\input_sample_1_WRONG.json\n\nAttempting to generate witness with wrong explanation...\n\nPASS: Witness generation failed as expected\nCircuit correctly rejected wrong explanation\n\nError message:\nC:\\Paper\\Masters thesis\\stage3_zk\\circuits\\top3_explanation\\build\\top3_explanation_js\\witness_calculator.js:166\n                    throw new Error(err);\n                          ^\n\nError: Error: Assert Failed.\nError in template Top3Explanation_18 line: 303\n\n    at C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\top3_explanation\\build\\top3_explanation_js\\witness_calculator.js:166:27\n    at Array.forEach (<anonymous>)\n    at WitnessCalculator._doCalculateWitness (C:\\Paper\\Masters thesis\\stage3_zk\\cir"
+    },
+    {
+      "name": "stage33_malicious_other2_sample1",
+      "ok": true,
+      "skipped": false,
+      "duration_ms": 359,
+      "details_tail": "lculator.js:166\n                    throw new Error(err);\n                          ^\n\nError: Error: Assert Failed.\nError in template CheckGroupId_16 line: 53\nError in template Top3Explanation_18 line: 230\n\n    at C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\top3_explanation\\build\\top3_explanation_js\\witness_calculator.js:166:27\n    at Array.forEach (<anonymous>)\n    at WitnessCalculator._doCalculateWitness (C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\top3_explanation\\build\\top3_explanation_js\\witness_calculator.js:141:14)\n    at WitnessCalculator.calculateWTNSBin (C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\top3_explanation\\build\\top3_explanation_js\\witness_calculator.js:216:20)\n    at C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\top3_explanation\\build\\top3_explanation_js\\generate_witness.js:16:38\n\nNode.js v20.12.2\n\n   PASS: Circuit correctly rejected out-of-range group ID\n\n======================================================================\nTEST SUMMARY\n======================================================================\n   Duplicate other2              : PASS\n   Permutation violation         : PASS\n   Out-of-range ID               : PASS\n\n   Tests passed: 3/3\n\n   ALL TESTS PASSED: Circuit defends against malicious witness attacks\n\n   Thesis implication: Circuit enforces all-distinct, permutation,\n   and range constraints, preventing prover from manipulating other2\n   witness to bypass dominance checks.\n\n======================================================================"
+    },
+    {
+      "name": "stage33_validate_public_top3_sample1",
+      "ok": true,
+      "skipped": false,
+      "duration_ms": 93,
+      "details_tail": "Validating Stage 3.3 proof for sample 1...\n\nExpected Top-3:      [2, 1, 5]\nActual Top-3:        [2, 1, 5]\n\nRank   Group ID   Name                      Contribution   \n======================================================================\n* 1     2          Application               2,404,909,056\n* 2     1          Protocol                  765,722,624\n* 3     5          TrafficVolume             88,863,615\n  4     4          Ports                     58,746,793\n  5     3          ConnectionState           57,540,608\n======================================================================\nSample: TP_attack\ny_hat:  1 (0=normal, 1=attack)\n\nPASS: Top-3 explanation matches"
+    }
+  ]
+}

@@ -9,7 +9,7 @@ $PTAU_PATH = "circuits\semantic_groups\powersOfTau28_hez_final_15.ptau"
 
 if (Test-Path $PTAU_PATH) {
     $size = (Get-Item $PTAU_PATH).Length / 1MB
-    Write-Host "✅ Powers of Tau 15 already exists ($([math]::Round($size, 1)) MB)"
+    Write-Host " Powers of Tau 15 already exists ($([math]::Round($size, 1)) MB)"
     exit 0
 }
 
@@ -25,10 +25,10 @@ New-Item -ItemType Directory -Force -Path "circuits\semantic_groups" | Out-Null
 curl.exe -L -o $PTAU_PATH "https://storage.googleapis.com/zkevm/ptau/powersOfTau28_hez_final_15.ptau"
 
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "❌ Download failed"
+    Write-Host " Download failed"
     exit 1
 }
 
 $size = (Get-Item $PTAU_PATH).Length / 1MB
 Write-Host ""
-Write-Host "✅ Downloaded: $PTAU_PATH ($([math]::Round($size, 1)) MB)"
+Write-Host " Downloaded: $PTAU_PATH ($([math]::Round($size, 1)) MB)"

@@ -84,7 +84,7 @@ if __name__ == "__main__":
         f"outputs/proofs/public_sample_1.json"
     ], check=True)
     
-    print("✅ Setup complete\n")
+    print("Setup complete\n")
     
     # Benchmark
     prove_times = benchmark_proof_generation(100)

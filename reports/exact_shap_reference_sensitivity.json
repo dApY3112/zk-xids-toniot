@@ -1,0 +1,49 @@
+{
+  "created_utc": "2026-05-22T15:26:10+00:00",
+  "sample_count": 1100,
+  "subset_source": "reconstructed_stage2_lr_tp1000_fn100_seed42",
+  "references": [
+    "training_mean",
+    "zero_vector",
+    "normal_train_mean"
+  ],
+  "comparisons": [
+    {
+      "reference": "zero_vector",
+      "mean_overlap_count": 2.2736363636363635,
+      "mean_jaccard": 0.639909090909091,
+      "ordered_top3_changed_count": 1012,
+      "ordered_top3_changed_rate": 0.92
+    },
+    {
+      "reference": "normal_train_mean",
+      "mean_overlap_count": 2.3945454545454545,
+      "mean_jaccard": 0.6972727272727273,
+      "ordered_top3_changed_count": 865,
+      "ordered_top3_changed_rate": 0.7863636363636364
+    }
+  ],
+  "frequencies": {
+    "training_mean": {
+      "ConnectionState": 1061,
+      "Protocol": 1044,
+      "TrafficVolume": 530,
+      "Application": 415,
+      "Ports": 250
+    },
+    "zero_vector": {
+      "ConnectionState": 765,
+      "Protocol": 1099,
+      "Application": 1070,
+      "TrafficVolume": 269,
+      "Ports": 97
+    },
+    "normal_train_mean": {
+      "ConnectionState": 1017,
+      "Protocol": 1100,
+      "TrafficVolume": 1085,
+      "Application": 97,
+      "Ports": 1
+    }
+  }
+}

@@ -20,7 +20,7 @@ PUBLIC="outputs/proofs/public_sample_${SAMPLE_ID}.json"
 
 # Check input exists
 if [ ! -f "$INPUT" ]; then
-    echo "❌ ERROR: Input not found at $INPUT"
+    echo "ERROR: Input not found at $INPUT"
     echo "Run: python stage3_zk/scripts/stage\ 3.1/01_prepare_input.py $SAMPLE_ID"
     exit 1
 fi
@@ -36,7 +36,7 @@ node "$OUT/inference_only_js/generate_witness.js" \
     "$WITNESS"
 
 WITNESS_TIME=$(( ($(date +%s%N) - START) / 1000000 ))
-echo "✅ Witness generated (${WITNESS_TIME}ms)"
+echo "Witness generated (${WITNESS_TIME}ms)"
 
 # 2. Generate proof
 echo ""
@@ -52,12 +52,12 @@ npx snarkjs groth16 prove \
 PROOF_TIME=$(( ($(date +%s%N) - START) / 1000000 ))
 PROOF_SIZE=$(stat -f%z "$PROOF" 2>/dev/null || stat -c%s "$PROOF")
 
-echo "✅ Proof generated (${PROOF_TIME}ms)"
+echo "Proof generated (${PROOF_TIME}ms)"
 
 # Summary
 echo ""
 echo "============================================"
-echo "✅ Proof Generation Complete!"
+echo "Proof Generation Complete!"
 echo "============================================"
 echo "Witness time: ${WITNESS_TIME}ms"
 echo "Proof time:   ${PROOF_TIME}ms"

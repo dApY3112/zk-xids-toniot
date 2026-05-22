@@ -1,0 +1,27 @@
+{
+  "scripts": {
+    "test:zk": "python scripts/run_stage3_tests.py --stage all",
+    "test:zk:quick": "python scripts/run_stage3_tests.py --stage all --no-witness-smoke",
+    "test:zk:clean": "python scripts/run_stage3_tests.py --stage all --clean",
+    "test:zk:full": "python scripts/run_stage3_tests.py --stage all --build --clean --prove --verify",
+    "evidence:zk:quick": "python scripts/run_stage3_tests.py --stage all --no-witness-smoke --report",
+    "evidence:zk:full": "python scripts/run_stage3_tests.py --stage all --build --clean --prove --verify --report",
+    "test:stage31": "python scripts/run_stage3_tests.py --stage 31",
+    "test:stage31:quick": "python scripts/run_stage3_tests.py --stage 31 --no-witness-smoke",
+    "test:stage32": "python scripts/run_stage3_tests.py --stage 32",
+    "test:stage32:quick": "python scripts/run_stage3_tests.py --stage 32 --no-witness-smoke",
+    "test:stage33": "python scripts/run_stage3_tests.py --stage 33",
+    "test:stage33:quick": "python scripts/run_stage3_tests.py --stage 33 --no-witness-smoke",
+    "test:stage33:validate": "python scripts/run_stage3_tests.py --stage 33 --validate-proofs",
+    "test:stage33:clean": "python scripts/run_stage3_tests.py --stage 33 --clean",
+    "test:stage33:full": "python scripts/run_stage3_tests.py --stage 33 --build --clean --prove --verify",
+    "test:stage34:witness": "python \"scripts/stage 3.4/03_witness_smoke_stage34.py\" 1",
+    "test:stage34:negative": "python \"scripts/stage 3.4/test_stage34_negative.py\" 1",
+    "evidence:stage34": "python \"scripts/stage 3.4/04_run_phase_c_stage34.py\" --samples 1,2,3"
+  },
+  "dependencies": {
+    "circom": "^0.5.46",
+    "circomlib": "^2.0.5",
+    "snarkjs": "^0.7.5"
+  }
+}

@@ -26,8 +26,8 @@ def create_wrong_explanation(correct_input):
     wrong_input = correct_input.copy()
     
     # Swap top3[2] with other2[0] - this should make proof fail
-    print(f"\n📌 Original top3: {correct_input['top3_ids']}")
-    print(f"📌 Original other2: {correct_input['other2_ids']}")
+    print(f"\nOriginal top3: {correct_input['top3_ids']}")
+    print(f"Original other2: {correct_input['other2_ids']}")
     
     wrong_top3 = correct_input['top3_ids'].copy()
     wrong_other2 = correct_input['other2_ids'].copy()
@@ -39,8 +39,8 @@ def create_wrong_explanation(correct_input):
     wrong_input['top3_ids'] = wrong_top3
     wrong_input['other2_ids'] = wrong_other2
     
-    print(f"\n❌ WRONG top3: {wrong_top3}")
-    print(f"❌ WRONG other2: {wrong_other2}")
+    print(f"\nWRONG top3: {wrong_top3}")
+    print(f"WRONG other2: {wrong_other2}")
     
     return wrong_input
 
@@ -62,10 +62,10 @@ def test_wrong_explanation(test_sample_id=1):
     with open(wrong_file, "w") as f:
         json.dump(wrong_input, f, indent=2)
     
-    print(f"\n✅ Created wrong input: {wrong_file}")
+    print(f"\nOK: Created wrong input: {wrong_file}")
     
     # Try to generate witness (should fail)
-    print("\n🔍 Attempting to generate witness with wrong explanation...")
+    print("\nAttempting to generate witness with wrong explanation...")
     
     wasm = os.path.join(OUTPUT_DIR, "top3_explanation_js", "top3_explanation.wasm")
     witness_out = os.path.join(OUTPUT_DIR, "witness_WRONG.wtns")
@@ -80,20 +80,20 @@ def test_wrong_explanation(test_sample_id=1):
         )
         
         if result.returncode != 0:
-            print("\n✅ SUCCESS: Witness generation FAILED as expected!")
-            print("❌ Circuit correctly rejected wrong explanation")
+            print("\nPASS: Witness generation failed as expected")
+            print("Circuit correctly rejected wrong explanation")
             print(f"\nError message:\n{result.stderr[:500]}")
             return 0
         else:
-            print("\n❌ FAILURE: Witness generation SUCCEEDED (should have failed!)")
-            print("⚠️ Circuit accepted wrong explanation - BUG IN CIRCUIT!")
+            print("\nFAIL: Witness generation succeeded (should have failed)")
+            print("Circuit accepted wrong explanation - BUG IN CIRCUIT")
             return 1
             
     except subprocess.TimeoutExpired:
-        print("\n❌ FAILURE: Witness generation timed out")
+        print("\nFAIL: Witness generation timed out")
         return 1
     except Exception as e:
-        print(f"\n❌ FAILURE: Unexpected error: {e}")
+        print(f"\nFAIL: Unexpected error: {e}")
         return 1
 
 if __name__ == "__main__":

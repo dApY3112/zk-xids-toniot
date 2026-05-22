@@ -6,6 +6,9 @@
 **ZK Stack**: Circom 2.1.9, Groth16, snarkjs 0.7.5  
 **Feature Count**: **104** (upgraded from 87)
 
+**Reproducible measurements** (timings, constraints, proof/public sizes) are captured by the harness evidence report:
+- `stage3_zk/reports/LATEST_REPRO_REPORT.md`
+
 ---
 
 ## Executive Summary
@@ -16,7 +19,7 @@ This report presents a complete Zero-Knowledge (ZK) proof system for privacy-pre
 2. **Stage 3.2**: Semantic group explanation circuit
 3. **Stage 3.3**: Top-3 verifiable explanation circuit
 
-**Key Achievement**: Successfully demonstrated that ZK proofs can provide verifiable AI predictions with explanations while maintaining input privacy, achieving **sub-second proving time** (684ms) and **sub-10ms verification** suitable for Security Operations Center (SOC) deployment.
+**Key Achievement**: Demonstrated verifiable predictions and verifiable top-3 semantic explanations while preserving input privacy. For authoritative, reproducible performance/complexity numbers, refer to `LATEST_REPRO_REPORT.md`.
 
 ---
 
@@ -46,10 +49,10 @@ This report presents a complete Zero-Knowledge (ZK) proof system for privacy-pre
 - **Output**: Binary classification (0 = normal, 1 = attack)
 - **Semantic groups**: 5 feature categories
   - Group 1: **Protocol** (3 features)
-  - Group 2: **Application** (74 features) 
+  - Group 2: **Application** (76 features) 
   - Group 3: **ConnectionState** (13 features)
   - Group 4: **Ports** (2 features)
-  - Group 5: **TrafficVolume** (12 features)
+  - Group 5: **TrafficVolume** (10 features)
 
 ---
 
@@ -97,17 +100,21 @@ x[i] <== x_shifted[i] - maxAbsX
 
 ### 2.2 Performance
 
-**Benchmark Results (100 runs)**:
-- **Proving time**: 156.28ms (mean), 132-524ms (range)
-- **Verification time**: 8.62ms (mean), 6-46ms (range)
+**Current harness evidence**:
+- Latest full evidence report: `stage3_zk/reports/LATEST_REPRO_REPORT.md`
+- Constraints: 3,831
+- Proof JSON: about 805 bytes
+- Public JSON: about 3,509 bytes
+- Per-sample prove steps in the latest CLI harness: about 953-1,030ms
+- Per-sample verify steps in the latest CLI harness: about 641-733ms
 
 **Circuit Complexity**:
-- Constraints: ~10,000 (estimated from Stage 3.2 breakdown)
+- Constraints: 3,831 in the latest generated R1CS
 - Template instances: 104 range checks + 1 score computation
 
 **Analysis**:
-- ✅ Fast proving: Sub-150ms suitable for real-time SOC workflows
-- ✅ Fast verification: <10ms allows high-throughput batch processing
+- ✅ Smallest circuit among the three stages
+- ✅ Verification remains cheaper than proving
 - ⚠️ Limited explainability: Only binary prediction revealed
 
 ## 3. Stage 3.2: Semantic Group Explanation
@@ -148,6 +155,8 @@ Prover computes G internally, uses them for explanation logic, but verifier does
 This preserves zero-knowledge property while enabling downstream explanation
 
 ### 3.2 Optimization History
+The following numbers are historical Node API / local benchmark notes. For final thesis tables, use `LATEST_REPRO_REPORT.md` and `zk_scaling_benchmark.md`.
+
 Initial Implementation:
 
 Proving time: 822ms (unoptimized)
@@ -162,15 +171,13 @@ Optimized Implementation:
 Proving time: 486ms (initial optimization)
 Removed redundant checks (one per feature): 104 bound checks + 104 binary checks
 Improvement: -41% proving time
-Final Benchmark (reported in benchmark_stage32.json):
+Current harness evidence for Stage 3.2:
 
-Proving time: 587.90ms (mean), 425-1324ms (range)
-Verification time: 10.25ms (mean)
-Circuit complexity:
-Non-linear constraints: 16,733
-Linear constraints: 1,768
-Total: 18,501 constraints
-Note: The 587ms vs 486ms discrepancy suggests benchmark was run on different hardware load or with additional defensive constraints re-added for formal correctness (see Section 6.1).
+- Constraints: 17,684 in the latest generated R1CS
+- Proof JSON: about 805 bytes
+- Public JSON: about 1,228 bytes
+- Per-sample prove steps in the latest CLI harness: about 1,328-1,546ms
+- Per-sample verify steps in the latest CLI harness: about 514-531ms
 
 ### 3.3 Validation
 Test Coverage: 3 samples
@@ -204,7 +211,7 @@ security value, thus we optimize for proving cost."
 Circuit: top3_explanation.circom
 New Public Inputs:
 
-top3_ids[3]: Claimed top-3 group IDs (e.g., [2, 3, 1])
+top3_ids[3]: Claimed top-3 group IDs (e.g., [2, 1, 5] for test sample 1)
 New Private Inputs:
 
 other2_ids[2]: Remaining 2 group IDs (e.g., [4, 5])
@@ -329,13 +336,13 @@ order12.out === 0;  // G_mapped[1] ≥ G_mapped[2]
 Setup: Generate valid input, swap top3_ids[2] with other2_ids[0]
 
 Script: test_wrong_explanation.py
-# Craft malicious explanation: swap Group 1 with Group 4
-correct_top3 = [2, 3, 1]  # Application, ConnectionState, Protocol
-correct_other2 = [4, 5]   # Ports, TrafficVolume
+# Craft malicious explanation: swap Group 5 with Group 4
+correct_top3 = [2, 1, 5]  # Application, Protocol, TrafficVolume
+correct_other2 = [4, 3]   # Ports, ConnectionState
 
 # Malicious prover's claim
-fake_top3 = [2, 3, 4]     # Replace Protocol with Ports
-fake_other2 = [1, 5]      # Move Protocol to "others"
+fake_top3 = [2, 1, 4]     # Replace TrafficVolume with Ports
+fake_other2 = [5, 3]      # Move TrafficVolume to "others"
 Result
 ```text
 [INFO] snarkJS: Assert Failed. TraceBack:
@@ -344,16 +351,16 @@ top3_explanation.circom:302:12
 
 Analysis: Circuit correctly rejected at Line 302: dominance constraint
 
-G[1] (Protocol) = 906M > G[4] (Ports) = 195M
-Dominance check failed: G_mapped[2] (Ports) ≥ G_mapped[3] (Protocol) ⟹ False
+G[5] (TrafficVolume) = 88.9M > G[4] (Ports) = 58.7M
+Dominance check failed: claimed top-3 group Ports does not dominate the moved-out TrafficVolume group.
 Conclusion: Adversary cannot forge fake explanation ✅
 
 #### Test 2: Robustness Across Prediction Classes
 | Sample | Type | y_true | y_pred | Top-3 Explanation | Proof Status |
 |--------|------|--------|--------|------------------|-------------|
-| 1 | TP (attack detected) | 1 | 1 | [2, 3, 1] | ✅ Valid |
+| 1 | TP (attack detected) | 1 | 1 | [2, 1, 5] | ✅ Valid |
 | 2 | TN (normal traffic) | 0 | 0 | [2, 3, 1] | ✅ Valid |
-| 3 | FN (attack missed) | 1 | 0 | [2, 3, 1] | ✅ Valid |
+| 3 | FN (attack missed) | 1 | 0 | [2, 1, 5] | ✅ Valid |
 Observations:
 
 #### Test 3: Malicious Witness Attack
@@ -366,7 +373,7 @@ Observations:
 - Inject out-of-range IDs (e.g., `[6, 4]`)
 
 **Test Setup**:
-- Correct explanation: `top3 = [2, 3, 1]`, `other2 = [4, 5]`
+- Correct explanation for sample 1: `top3 = [2, 1, 5]`, `other2 = [4, 3]`
 - Malicious inputs crafted to test each attack vector
 
 **Results**:
@@ -394,21 +401,26 @@ Circuit successfully defends against **malicious witness manipulation**, proving
 
 **Contrast with unverified systems**: In traditional ML explainability (LIME, SHAP), client could claim arbitrary feature importance without verification. Our ZK-XAI system provides **cryptographic proof** that explanations match actual model computation.
 
-Explanation invariance: Same top-3 across all samples (Application → ConnectionState → Protocol)
-Prediction independence: Circuit accepts both y_pred=0 and y_pred=1 with same explanation
-Implication: Explanation reflects feature importance, not prediction outcome
+Explanation diversity: sample 1 and sample 3 use [2, 1, 5] (Application, Protocol, TrafficVolume), while sample 2 uses [2, 3, 1] (Application, ConnectionState, Protocol).
+Prediction independence: Circuit accepts both y_pred=0 and y_pred=1 when the explanation matches the computed group ranking.
+Implication: Explanation reflects feature importance for the private input, not just the prediction outcome.
 
 ### 4.4 Performance
-Benchmark Results (100 runs):
+Current harness evidence:
 
-Proving time: 683.63ms (mean), 519-1149ms (range)
-Verification time: 9.04ms (mean), 6-24ms (range)
-Standard deviation: 143.47ms (proving), 3.17ms (verification)
-Constraint Breakdown (estimated):
+- Latest full evidence report: `stage3_zk/reports/LATEST_REPRO_REPORT.md`
+- Constraints: 18,719
+- Proof JSON: about 803 bytes
+- Public JSON: about 1,178 bytes
+- Per-sample prove steps in the latest CLI harness: about 1,266-1,468ms
+- Per-sample verify steps in the latest CLI harness: about 531-608ms
+- Repeated Stage 3.3 benchmark (`zk_scaling_benchmark.md`): prove mean 1,532ms, p50 1,484ms, p95 1,847ms; verify mean 588ms, p50 562ms, p95 696ms
+
+Historical constraint breakdown estimate:
 
 | Block | Constraints | Description |
 |-------|-------------|-------------|
-| A+B+C | ~23,600 | Inherited from Stage 3.2 |
+| A+B+C | ~17,684 measured constraints | Inherited from Stage 3.2 |
 | Range checks | 5 × 10 = 50 | CheckGroupId templates |
 | All-distinct | 10 × 30 = 300 | IsEqual components |
 | Permutation | 2 | sum=15, sumsq=55 |
@@ -416,34 +428,29 @@ Constraint Breakdown (estimated):
 | Bound checks | 5 × 120 = 600 | G_mapped range validation (54-bit) |
 | Dominance | 6 × 120 = 720 | LessThan(54-bit) |
 | Ordering | 2 × 120 = 240 | LessThan(54-bit) |
-| **Total** | **~25,760** | |
-Overhead Analysis:
-
-Stage 3.3 vs 3.1: +541.77ms (+381.9% overhead)
-Stage 3.3 vs 3.2: +95.73ms (+16.3% overhead)
+| **Total** | **18,719 measured constraints** | Latest R1CS |
 ## 5. Comparative Analysis
 ### 5.1 Performance Summary
-Stage	Proving (ms)	Verification (ms)	Constraints	Overhead vs 3.1
-3.1 (Inference)	141.86	7.75	~8,000	Baseline
-3.2 (Groups)	587.90	10.25	18,501	+314.4%
-3.3 (Top-3)	683.63	9.04	~20,402	+381.9%
+| Stage | Constraints | Latest prove-step range | Latest verify-step range | Notes |
+|---|---:|---:|---:|---|
+| 3.1 (Inference) | 3,831 | 953-1,030ms | 641-733ms | Baseline privacy proof |
+| 3.2 (Groups) | 17,684 | 1,328-1,546ms | 514-531ms | Adds private semantic aggregation |
+| 3.3 (Top-3) | 18,719 | 1,266-1,468ms | 531-608ms | Adds verifiable top-3 explanation |
 Key Metrics:
 
-Sub-second proving: All stages <1000ms (SOC-acceptable)
-Sub-10ms verification: Critical for high-throughput SOC deployment
-Incremental cost: Top-3 verification adds only 96ms over group computation
+The current table reports CLI-harness wall-clock steps and includes process overhead. Older Node API numbers are useful as historical optimization notes, but final thesis tables should use one protocol consistently.
 5.2 Security-Performance Trade-off
 Thesis Defense Narrative:
 
-"The 4.8× proving overhead (Stage 3.3 vs 3.1) purchases three critical security guarantees: (1) input privacy via ZK property, (2) semantic group isolation via absolute value computation, and (3) explanation authenticity via dominance constraints. This represents an acceptable cost for trustworthy AI in security-critical SOC environments."
+"The proving overhead from Stage 3.3 purchases three critical security guarantees: (1) input privacy via ZK property, (2) semantic group isolation via absolute value computation, and (3) explanation authenticity via dominance constraints. This represents an acceptable cost for trustworthy AI in security-critical SOC environments."
 
 Quantitative Justification:
 
 Alternative 1 (No ZK): Proving = 0ms, but privacy lost (client must reveal raw traffic)
-Alternative 2 (Stage 3.1 only): Proving = 142ms, but no explainability (SOC cannot investigate)
-Alternative 3 (Unverified explanation): Proving = 588ms, but adversary can mislead (fake top-3)
-Our Solution (Stage 3.3): Proving = 684ms, full trust + privacy + explainability
-Cost-benefit: 96ms buys cryptographic proof of explanation authenticity
+Alternative 2 (Stage 3.1 only): proves inference, but no explainability (SOC cannot investigate)
+Alternative 3 (Unverified explanation): computes groups, but adversary can mislead (fake top-3)
+Our Solution (Stage 3.3): full trust + privacy + verifiable explanation authenticity
+Cost-benefit: extra constraints buy cryptographic proof that the explanation matches the model computation
 
 ### 5.3 Trust vs Speed Design Philosophy
 Optimization Opportunities Declined:
@@ -519,10 +526,10 @@ wsl bash -c "circom top3_explanation.circom --r1cs --wasm --sym"
 # 2. Groth16 setup (2-3 minutes)
 snarkjs groth16 setup top3_explanation.r1cs powersOfTau.ptau circuit.zkey
 
-# 3. Generate proof (~684ms)
+# 3. Generate proof (current Stage 3.3 CLI harness p50 ~1.48s)
 snarkjs groth16 prove circuit.zkey witness.wtns proof.json public.json
 
-# 4. Verify proof (~9ms)
+# 4. Verify proof (current Stage 3.3 CLI harness p50 ~0.56s)
 snarkjs groth16 verify verification_key.json public.json proof.json
 
 ### 6.3 Input Preparation
@@ -640,13 +647,13 @@ validates that the circuit does not trivially output fixed values.
 ├─────────────┤                  ├─────────────┤
 │ 1. Capture  │                  │ 5. Verify   │
 │    traffic  │                  │    proof    │
-│             │                  │    (~9ms)   │
+│             │                  │ latest bench│
 │ 2. Quantize │                  │             │
 │    features │                  │ 6. Extract  │
 │             │                  │    top-3    │
 │ 3. Generate │  ──(proof)──>    │    from     │
 │    proof    │                  │    public   │
-│    (~684ms) │                  │    input    │
+│ latest bench│                  │    input    │
 │             │                  │             │
 │ 4. Send     │                  │ 7. Alert if │
 │    proof +  │                  │    y_hat=1  │
@@ -655,30 +662,30 @@ validates that the circuit does not trivially output fixed values.
 Bandwidth:
 
 Proof size: ~1KB (Groth16 fixed size)
-Public input: ~400 bytes (104 weights + bias + y_hat + top3_ids)
-Total per inference: <2KB
+Public input: ~1.2KB for Stage 3.3 sample 1 in the latest report
+Total per inference: about 2KB proof + public JSON, excluding transport metadata
 Throughput:
 
-Prover: ~1.46 predictions/sec (1000ms / 684ms)
-Verifier: ~110 predictions/sec (1000ms / 9ms)
+Prover: roughly 0.6-0.8 Stage 3.3 proofs/sec under current CLI-harness timing
+Verifier: cheaper than proving; current CLI-harness verify p50 is about 562ms for Stage 3.3
 Bottleneck: Prover-side proving time
 ### 8.2 Scalability Analysis
 Scenario: SOC monitoring 1000 clients
 
 Option 1 - Sequential Processing:
 
-Total proving time: 1000 × 684ms = 684 seconds (~11 minutes)
+Total proving time: approximately 1000 × 1.5s = 1500 seconds (~25 minutes) under current CLI-harness timing
 Not suitable for real-time monitoring
 Option 2 - Parallel Processing:
 
 Deploy 100 prover workers (multi-core or distributed)
 Per-worker load: 10 clients
-Total time: 10 × 684ms = 6.84 seconds
+Total time: approximately 10 × 1.5s = 15 seconds under current CLI-harness timing
 Acceptable for periodic batch processing
 Option 3 - Hardware Acceleration:
 
 Use GPU-accelerated ZK provers (e.g., rapidsnark)
-Estimated speedup: 5-10× → ~100ms proving time
+Estimated speedup: 5-10× could move proving toward a few hundred milliseconds
 Future work: Benchmark with GPU backend
 ### 8.3 Trusted Setup
 Powers of Tau Ceremony:
@@ -719,12 +726,12 @@ Defense against explanation manipulation attacks (new threat model)
 **Limitations**:
 - Model-specific: Circuit hardcoded for 104 features, 5 groups
 - Linear models only: Extension to neural networks requires polynomial constraints
-- Prover cost: 684ms may be too slow for edge devices
+- Prover cost: current Stage 3.3 CLI-harness p50 prove time is about 1.48s, which may be too slow for edge devices
 
 **Future Directions**:
 
 Recursive SNARKs: Amortize proving cost across multiple inferences
-Hardware acceleration: GPU-based provers for <100ms proving
+Hardware acceleration: GPU-based provers for lower-latency proving
 Dynamic circuits: Support variable feature counts without recompilation
 Neural network support: Polynomial approximations for ReLU activations
 ## 10. Conclusion
@@ -732,11 +739,11 @@ This work demonstrates that Zero-Knowledge proofs can provide trustworthy AI exp
 
 Key Results:
 
-✅ Sub-second proving (684ms): Suitable for SOC batch processing
-✅ Sub-10ms verification (9ms): Enables high-throughput deployment
+✅ Reproducible Stage 3.3 proving evidence: p50 prove about 1.48s in current CLI harness
+✅ Reproducible Stage 3.3 verification evidence: p50 verify about 0.56s in current CLI harness
 ✅ Cryptographic explanation authenticity: Adversary cannot forge fake top-3
 ✅ Full input privacy: Verifier learns only prediction and top-3 group IDs
-Thesis Position: "The 4.8× overhead over inference-only ZK is an acceptable cost for verifiable explainability in security-critical domains. We prioritize trust over speed, employing defense-in-depth constraint design to ensure formal correctness."
+Thesis Position: "The additional overhead over inference-only ZK is an acceptable cost for verifiable explainability in security-critical domains. We prioritize trust over speed, employing defense-in-depth constraint design to ensure formal correctness."
 stage3_zk/
 ├── circuits/
 │   ├── inference_only/           # Stage 3.1
@@ -768,23 +775,24 @@ stage3_zk/
 │       ├── benchmark_stage33.json
 │       └── benchmark_stage32.json
 └── reports/
-    └── stage3_final_report.md    # This document
+    ├── stage3.md                 # This technical report
+    └── FINAL_SUMMARY.md          # Narrative final summary
 ## Appendix B: Test Results
 
 ### Sample 1 (TP - Attack Detected)
 
 **Input**: sample_id=0, label="TP_attack", y_true=1, y_pred=1
 
-**Top-3**: [2, 3, 1] = Application → ConnectionState → Protocol
+**Top-3**: [2, 1, 5] = Application → Protocol → TrafficVolume
 
 **Group Contributions**:
 | Group | Contribution | Normalized |
 |-------|--------------|------------|
-| Application | 3,847,577,692 | 3.8B |
-| ConnectionState | 2,024,832,072 | 2.0B |
-| Protocol | 906,290,652 | 906M |
-| Ports | 195,316,800 | 195M |
-| TrafficVolume | 96,083,872 | 96M |
+| Application | 2,404,909,056 | 2.4B |
+| Protocol | 765,722,624 | 766M |
+| TrafficVolume | 88,863,615 | 89M |
+| Ports | 58,746,793 | 59M |
+| ConnectionState | 57,540,608 | 58M |
 
 **Proof**: ✅ Generated successfully  
 **Verification**: ✅ Passed
@@ -792,7 +800,7 @@ stage3_zk/
 
 **Input**: sample_id=1, label="TN_normal", y_true=0, y_pred=0
 
-**Top-3**: [2, 3, 1] = Application → ConnectionState → Protocol (same)
+**Top-3**: [2, 3, 1] = Application → ConnectionState → Protocol
 
 **Proof**: ✅ Generated successfully  
 **Verification**: ✅ Passed
@@ -800,7 +808,7 @@ stage3_zk/
 
 **Input**: sample_id=43, label="FN_attack", y_true=1, y_pred=0
 
-**Top-3**: [2, 3, 1] = Application → ConnectionState → Protocol (same)
+**Top-3**: [2, 1, 5] = Application → Protocol → TrafficVolume
 
 **Proof**: ✅ Generated successfully  
 **Verification**: ✅ Passed
@@ -811,83 +819,29 @@ stage3_zk/
 **Result**: ❌ Assert Failed at line 302 (dominance constraint)
 
 **Interpretation**: Circuit correctly rejects fake explanation
-## Appendix C: Benchmark Data
+## Appendix C: Current Benchmark Pointers
 
-### Stage 3.1 (Inference Only)
+The current authoritative benchmark artifacts are generated by the reproducibility harness:
 
-```json
-{
-  "proof_generation": {
-    "mean_ms": 141.86,
-    "median_ms": 129,
-    "min_ms": 119,
-    "max_ms": 556,
-    "stdev_ms": 49.19
-  },
-  "verification": {
-    "mean_ms": 7.75,
-    "median_ms": 7,
-    "min_ms": 6,
-    "max_ms": 19,
-    "stdev_ms": 1.70
-  },
-  "constraints": {
-    "total": 10000,
-    "features": 104
-  }
-}
-```
-### Stage 3.2 (Semantic Groups)
+- `stage3_zk/reports/LATEST_REPRO_REPORT.md`
+- `stage3_zk/reports/zk_scaling_benchmark.md`
 
-```json
-{
-  "constraints": {
-    "non_linear": 21500,
-    "linear": 2100,
-    "total": 23600,
-    "features": 104
-  },
-  "proof_generation": {
-    "mean_ms": 587.90,
-    "median_ms": 532,
-    "min_ms": 425,
-    "max_ms": 1324,
-    "stdev_ms": 169.61
-  },
-  "verification": {
-    "mean_ms": 10.25,
-    "median_ms": 9,
-    "min_ms": 7,
-    "max_ms": 26,
-    "stdev_ms": 3.61
-  }
-}
-```
-### Stage 3.3 (Top-3 Explanation)
+Latest complexity table:
 
-```json
-{
-  "constraints": {
-    "total": 25760,
-    "features": 104,
-    "groups": 5
-  },
-  "proof_generation": {
-    "mean_ms": 683.63,
-    "median_ms": 633,
-    "min_ms": 519,
-    "max_ms": 1149,
-    "stdev_ms": 143.47
-  },
-  "verification": {
-    "mean_ms": 9.04,
-    "median_ms": 8,
-    "min_ms": 6,
-    "max_ms": 24,
-    "stdev_ms": 3.17
-  }
-}
-```
+| Stage | Constraints | Wires | Public Inputs | Private Inputs | Proof bytes | Public bytes |
+|---:|---:|---:|---:|---:|---:|---:|
+| 31 | 3,831 | 3,829 | 106 | 104 | 805 | 3,509 |
+| 32 | 17,684 | 17,150 | 111 | 104 | 805 | 1,228 |
+| 33 | 18,719 | 18,043 | 109 | 106 | 803 | 1,178 |
+
+Latest repeated Stage 3.3 benchmark:
+
+| Step | Mean ms | p50 ms | p95 ms |
+|---|---:|---:|---:|
+| prepare_input | 77 | 70 | 109 |
+| witness_smoke | 87 | 78 | 150 |
+| prove | 1,532 | 1,484 | 1,847 |
+| verify | 588 | 562 | 696 |
 
 End of Report
 

@@ -1,0 +1,3 @@
+reference,mean_overlap_count,mean_jaccard,ordered_top3_changed_count,ordered_top3_changed_rate
+zero_vector,2.2736363636363635,0.639909090909091,1012,0.92
+normal_train_mean,2.3945454545454545,0.6972727272727273,865,0.7863636363636364

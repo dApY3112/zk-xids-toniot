@@ -5,22 +5,22 @@ Prove rằng output phân loại `y_hat` là kết quả suy luận của Logist
 Verifier/SOC có thể kiểm chứng độc lập rằng prover dùng **đúng model đã công bố** và dự đoán là đúng theo rule `score >= 0`.
 
 ## 2) Artifacts (paths)
-- Circuit: [circuits/inference_only/inference_only.circom](circuits/inference_only/inference_only.circom)
-- Compiled outputs (R1CS/WASM/ZKEY/VK): [circuits/inference_only/build](circuits/inference_only/build)
-- Model parameters (quantized): [artifacts/model_public.json](artifacts/model_public.json)
-- Bounds: [artifacts/bounds.json](artifacts/bounds.json)
-- Prepared circuit input example: [circuits/inference_only/build/input_sample_1.json](circuits/inference_only/build/input_sample_1.json)
+- Circuit: [circuits/inference_only/inference_only.circom](../circuits/inference_only/inference_only.circom)
+- Compiled outputs (R1CS/WASM/ZKEY/VK): [circuits/inference_only/build](../circuits/inference_only/build)
+- Model parameters (quantized): [artifacts/model_public.json](../artifacts/model_public.json)
+- Bounds: [artifacts/bounds.json](../artifacts/bounds.json)
+- Prepared circuit input example: [circuits/inference_only/build/input_sample_1.json](../circuits/inference_only/build/input_sample_1.json)
 - Proof & public signals (sample 1):
-  - [outputs/proofs/proof_sample_1.json](outputs/proofs/proof_sample_1.json)
-  - [outputs/proofs/public_sample_1.json](outputs/proofs/public_sample_1.json)
+  - [outputs/proofs/proof_sample_1.json](../outputs/proofs/proof_sample_1.json)
+  - [outputs/proofs/public_sample_1.json](../outputs/proofs/public_sample_1.json)
 - Benchmarks:
-  - WSL/CLI overhead benchmark: [outputs/proofs/benchmark_results.json](outputs/proofs/benchmark_results.json)
-  - Optimized (Node API) benchmark: [outputs/proofs/benchmark_optimized.json](outputs/proofs/benchmark_optimized.json)
+  - WSL/CLI overhead benchmark: [outputs/proofs/benchmark_results.json](../outputs/proofs/benchmark_results.json)
+  - Optimized (Node API) benchmark: [outputs/proofs/benchmark_optimized.json](../outputs/proofs/benchmark_optimized.json)
 
 ## 3) Circuit specification
 
 ### 3.1 Inputs/outputs (public/private)
-Circuit in [circuits/inference_only/inference_only.circom](circuits/inference_only/inference_only.circom) uses:
+Circuit in [circuits/inference_only/inference_only.circom](../circuits/inference_only/inference_only.circom) uses:
 
 - Private witness:
   - `x_shifted[104]` where `x_shifted[i] = x[i] + maxAbsX` (unsigned)
@@ -29,8 +29,6 @@ Circuit in [circuits/inference_only/inference_only.circom](circuits/inference_on
 
 Main:
 - `component main {public [w, b, y_hat]} = InferenceOnly(104, 37, 68719476736, 297270816);`
-
-Note: Circuit files need updating - currently still use n=87 with old maxAbsX=67995696.
 
 Why `x_shifted`:
 - JSON negative integers get reduced mod BN254 field when interpreted by snarkjs/circom tooling, which breaks “signed range checks”.
@@ -58,7 +56,7 @@ Therefore comparator must support 37-bit range:
 - Enforce `y_hat ∈ {0,1}` via `y_hat * (y_hat - 1) == 0`
 
 2) Input range (per feature):
-- With `maxAbsX = 297270816` (from [artifacts/bounds.json](artifacts/bounds.json))
+- With `maxAbsX = 297270816` (from [artifacts/bounds.json](../artifacts/bounds.json))
 - Enforce `x_shifted[i] ∈ [0, 2*maxAbsX]` using:
   - `LessThan(30)` with bound `2*maxAbsX + 1` (inclusive upper bound)
 
@@ -77,48 +75,54 @@ Note: negative weights/bias appear “as large field elements” in `public_samp
 ## 4) Correctness evidence
 - Proof verification succeeded using the generated VK and sample public signals:
   - `npx snarkjs groth16 verify ...` returns `OK!`
-- In [outputs/proofs/public_sample_1.json](outputs/proofs/public_sample_1.json), the last element is `y_hat` (e.g., `"1"`).
+- In [outputs/proofs/public_sample_1.json](../outputs/proofs/public_sample_1.json), the last element is `y_hat` (e.g., `"1"`).
 
 ## 5) Quantization / bounds (sanity)
-From [artifacts/model_public.json](artifacts/model_public.json):
+From [artifacts/model_public.json](../artifacts/model_public.json):
 - `n = 104`, `Sx = 2^16`, `Sw = 2^12`
 Circuit uses:
 - `B = 2^36` and checks the score stays within this bound (via `score_offset` bound check).
 
-Input preparation script [scripts/01_prepare_input.py](scripts/01_prepare_input.py):
+Input preparation script [scripts/stage 3.1/01_prepare_input.py](../scripts/stage%203.1/01_prepare_input.py):
 - Creates `x_shifted`
 - Checks `|score_int| <= B`
 - Validates `x_shifted[i] ∈ [0, 2*maxAbsX]`
 
-## 6) Performance (100 runs)
-### 6.1 Optimized benchmark (authoritative cryptographic timings)
-From [outputs/proofs/benchmark_optimized.json](outputs/proofs/benchmark_optimized.json):
-- Proving (includes witness): mean **141.86 ms** (median 129 ms)
-- Verification: mean **7.75 ms** (median 7 ms)
+## 6) Performance
 
-### 6.2 WSL/CLI baseline (includes process + filesystem overhead)
-From [outputs/proofs/benchmark_results.json](outputs/proofs/benchmark_results.json):
-- Proving: mean ≈ 2212 ms
-- Verification: mean ≈ 1905 ms
+Use [LATEST_REPRO_REPORT.md](LATEST_REPRO_REPORT.md) as the current authoritative source for Stage 3.1 constraints, sizes, and harness timings.
 
-Interpretation: CLI + WSL invocation overhead dominates; the optimized benchmark reflects the real proving/verifying cost more accurately.
+Latest full evidence run:
+
+| Metric | Value |
+|---|---:|
+| Constraints | 3,831 |
+| Wires | 3,829 |
+| Public inputs | 106 |
+| Private inputs | 104 |
+| Proof JSON | about 805 bytes |
+| Public JSON | about 3,509 bytes |
+| Prove step range across samples | about 953-1,030 ms |
+| Verify step range across samples | about 641-733 ms |
+
+Historical files [benchmark_optimized.json](../outputs/proofs/benchmark_optimized.json) and [benchmark_results.json](../outputs/proofs/benchmark_results.json) are useful for optimization notes, but final thesis timing tables should use one protocol consistently.
 
 ## 7) How to run (Step 3.1)
 
-### Build (compile + setup + vk)
-From Windows PowerShell (repo root):
-- `powershell -ExecutionPolicy Bypass -File scripts/02_build_circuit.ps1`
+### Recommended harness
+From `stage3_zk/`:
+- `python scripts/run_stage3_tests.py --stage 31 --samples 1,2,3`
+- `python scripts/run_stage3_tests.py --stage 31 --build --clean --prove --verify --report`
 
-Notes:
-- This script compiles with WSL circom at `/usr/local/bin/circom`, then runs `npx snarkjs` on Windows.
+From the repository root:
+- `python tools/reproduce.py zk --stage 31 --samples 1,2,3`
 
-### Prepare input (sample k)
-- `python scripts/01_prepare_input.py 1`
+### Direct per-stage scripts
+From `stage3_zk/`:
+- Build: `powershell -ExecutionPolicy Bypass -File "scripts/stage 3.1/02_build_circuit.ps1"`
+- Prepare input: `python "scripts/stage 3.1/01_prepare_input.py" 1`
+- Prove: `wsl bash "scripts/stage 3.1/03_generate_proof.sh" 1`
+- Verify: `wsl bash "scripts/stage 3.1/04_verify_proof.sh" 1`
 
-### Prove + verify
-Using the provided WSL scripts:
-- Prove: `wsl bash scripts/03_generate_proof.sh 1`
-- Verify: `wsl bash scripts/04_verify_proof.sh 1`
-
-### Benchmark (recommended)
-- `node scripts/benchmark_optimized.js`
+### Historical benchmark script
+- `node "scripts/stage 3.1/benchmark_optimized.js"`

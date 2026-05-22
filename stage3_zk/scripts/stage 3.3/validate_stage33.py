@@ -80,7 +80,7 @@ def validate_proof(test_sample_id):
     groups_display.sort(key=lambda x: x[2], reverse=True)
     
     for rank, (gid, name, val) in enumerate(groups_display, 1):
-        marker = "✅" if gid in actual_top3 else "  "
+        marker = "*" if gid in actual_top3 else " "
         print(f"{marker} {rank:<5} {gid:<10} {name:<25} {val:,}")
     
     print("=" * 70)
@@ -88,10 +88,10 @@ def validate_proof(test_sample_id):
     print(f"y_hat:  {test_vec['y_hat']} (0=normal, 1=attack)")
     
     if expected_top3 == actual_top3:
-        print("\n✅ VALIDATION PASSED: Top-3 explanation matches!")
+        print("\nPASS: Top-3 explanation matches")
         return 0
     else:
-        print("\n❌ VALIDATION FAILED: Top-3 mismatch!")
+        print("\nFAIL: Top-3 mismatch")
         return 1
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Convert test_sample_X.json → circuit input format with x_shifted (unsigned)
+Convert test_sample_X.json -> circuit input format with x_shifted (unsigned)
 """
 
 import json
@@ -9,17 +9,17 @@ import sys
 import os
 
 # Paths
-# Paths
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-BASE_DIR = os.path.dirname(SCRIPT_DIR)
-ARTIFACTS_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "artifacts"))
-TEST_VECTORS_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "test_vectors"))
-OUTPUT_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "..", "circuits", "inference_only", "build"))
+# Set base as stage3_zk directory
+STAGE3_ZK_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, "..", ".."))
+ARTIFACTS_DIR = os.path.join(STAGE3_ZK_DIR, "artifacts")
+TEST_VECTORS_DIR = os.path.join(STAGE3_ZK_DIR, "test_vectors")
+OUTPUT_DIR = os.path.join(STAGE3_ZK_DIR, "circuits", "inference_only", "build")
 
 def check_bounds(score, B):
     """Verify score is within circuit bounds"""
     if abs(score) > B:
-        print(f"❌ ERROR: Score {score} exceeds bound B={B}")
+        print(f"ERROR: Score {score} exceeds bound B={B}")
         print(f"   |score| = {abs(score)}, max allowed = {B}")
         return False
     return True
@@ -71,7 +71,7 @@ def prepare_input(test_sample_id=1):
     # Verify x_shifted is in valid range [0, 2*maxAbsX]
     for i, xs in enumerate(x_shifted):
         if xs < 0 or xs > 2 * maxAbsX:
-            print(f"❌ ERROR: x_shifted[{i}] = {xs} out of range [0, {2*maxAbsX}]")
+            print(f"ERROR: x_shifted[{i}] = {xs} out of range [0, {2*maxAbsX}]")
             sys.exit(1)
     
     # Prepare circuit input
@@ -90,7 +90,7 @@ def prepare_input(test_sample_id=1):
         json.dump(circuit_input, f, indent=2)
     
     # Print summary
-    print(f"✅ Prepared circuit input: {output_file}")
+    print(f"OK: Prepared circuit input: {output_file}")
     print(f"   Sample: {test_vec['label']}")
     print(f"   Features: {n}")
     print(f"   Score: {score}")

@@ -1,0 +1,2 @@
+# Install pinned, reproducible environment
+-r requirements.lock.txt

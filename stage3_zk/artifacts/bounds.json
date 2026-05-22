@@ -1,0 +1,6 @@
+{
+  "max_abs_x_int": 297270816,
+  "max_abs_w_int": 122130,
+  "max_abs_score_int": 22988183559,
+  "note": "These bounds must fit in ZK field (typically ~254 bits for BN254 curve)"
+}

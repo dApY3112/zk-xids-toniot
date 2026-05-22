@@ -1,238 +1,164 @@
-# ZK-XIDS: Zero-Knowledge Privacy-Preserving Intrusion Detection System
+# A Zero-Knowledge Framework for Verifiable Semantic Explanations under Private Inputs: An Intrusion Detection Case Study
 
-This repository contains the full code, data, and documentation for the Master's thesis project:  
-**ZK-XIDS: Zero-Knowledge Privacy-Preserving Intrusion Detection System for Network Security**.
+This repository contains the full code, data, and documentation for a Master's thesis on **zero-knowledge verifiable semantic explanations under private inputs**. The implementation is organized as the ZK-XIDS intrusion detection case study.
 
----
+This repository implements an intrusion detection case study of a broader zero-knowledge framework for verifiable semantic explanations under private inputs. The reusable proof pattern targets public linear/logistic tabular models with fixed semantic groups and a fixed reference vector, while the current empirical instantiation uses TON_IoT intrusion detection.
 
-## TL;DR
-- **Goal:** Privacy-preserving + auditable intrusion detection using **Zero-Knowledge Proofs (ZK)**, with **explainability** artifacts that can also be verified.
-- **Dataset:** TON_IoT Network dataset (23 processed CSV files, 46 columns, ~22M rows).
-- **Pipeline:**  
-  **Stage 1** (sanity + splits + leakage) → **Stage 2** (top-k explainability + semantic grouping + stability) → **Stage 3** (Circom 2.1.9 + Groth16, 3 circuit stages).
-
----
-
-## Key Results (What this repo proves you can reproduce)
-### Stage 2 (Explainability artifacts)
-You should be able to reproduce and/or regenerate these outputs:
-- **Top-k frequency CSVs**
-  - `top10_frequency_logreg.csv`, `top10_frequency_xgb.csv`
-  - `semantic_group_frequency_logreg.csv`, `semantic_group_frequency_xgb.csv`
-- **Stability / overlap summaries (JSON)**
-  - `stability_summary.json`, `overlap_summary.json`
-  - `semantic_stability_summary.json`, `semantic_overlap_summary.json`
-  - `diversity_analysis.json`
-- **Figures**
-  - `fig_top10_logreg.png`, `fig_top10_xgb.png`
-  - `fig_semantic_groups_logreg.png`, `fig_semantic_groups_xgb.png`
-- **Numpy artifacts (optional)**
-  - `topk_logreg.npy`, `topk_xgb.npy`
-
-> These files are generated in your Stage 2 output folder (wherever your notebooks/scripts currently save them).
-
-### Stage 3 (ZK proof artifacts + benchmark outputs)
-You should be able to generate and verify proofs, and produce benchmark JSON files such as:
-- Proof & public inputs (examples):
-  - `proof_sample_1.json`, `public_sample_1.json`
-  - `proof_stage32_sample_1.json`, `public_stage32_sample_1.json`
-  - `proof_stage33_sample_1.json`, `public_stage33_sample_1.json`
-- Benchmarks:
-  - `benchmark_results.json`
-  - `benchmark_optimized.json`
-  - `benchmark_stage32.json`
-  - `benchmark_stage33.json`
-
----
+## Project Overview
+- **Objective:** Develop and evaluate a verifiable semantic explanation framework under private inputs, instantiated as a privacy-preserving IDS case study using zero-knowledge proofs (ZKP).
+- **Dataset:** TON_IoT Network dataset (23 processed CSV files, 46 columns, ~22M rows)
+- **Stages:**
+  1. **Stage 1:** Data sanity check, stratified train/val/test split, leakage analysis
+  2. **Stage 2:** Top-k explainability (LogReg, XGBoost, semantic grouping, stability analysis)
+  3. **Stage 3:** ZK-XIDS implementation (Circom 2.1.9, Groth16, four circuit stages)
 
 ## Folder Structure
-- `data/` — Raw and processed datasets (not tracked; see Dataset Setup)
-- `notebooks/` — Jupyter notebooks for Stages 1–2
-- `outputs/` — Splits, models, metrics, explainability artifacts
-- `reports/` — Markdown reports for each stage
-- `stage3_zk/` — ZK-XIDS implementation (Circom/Groth16), scripts, circuits, proofs, benchmarks
+- `data/` - Raw and processed datasets
+- `notebooks/` - Jupyter notebooks for data analysis, preprocessing, and model training
+- `outputs/` - Model artifacts, splits, reports, and explainability results
+- `reports/` - Markdown reports for each stage
+- `stage3_zk/` - ZK-XIDS implementation, circuits, scripts, and final summary
 
-Inside `stage3_zk/`:
-- `scripts/`
-  - `stage 3.1/` (setup → prepare input → build circuit → prove → verify → benchmark)
-  - `stage 3.2/` (stage-32 specific scripts)
-  - `stage 3.3/` (stage-33 specific scripts)
+## Key Features
+- **Verifiable semantic explanation framework** in a public-model/private-input setting
+- **Privacy-preserving inference** using ZKP, with input-feature privacy and intentional output disclosure
+- **Explainable AI**: Top-k feature attribution, semantic grouping
+- **Academic explainability extension**: semantic-group Exact SHAP over the 5 semantic groups, with Stage 3.4 SNARK verification for the public Logistic Regression model
+- **Reproducible splits** and pipeline
+- **Imbalance-aware, thesis-grade evaluation** (operating points, calibration, drift proxy, cost-based thresholds)
+- **Comprehensive documentation** for thesis defense
 
----
+## Thesis Contribution Framing
 
-## Requirements
-### Python (Stages 1–2 + benchmarks)
-- Python **3.10+**
-- Recommended: Conda / venv
-- Packages: defined in `requirements.txt` (if present)
+- C1. A public-model/private-input framework for verifiable semantic explanations, instantiated on intrusion detection.
+- C2. A semantic-group explanation abstraction that maps high-dimensional tabular features into human-readable groups.
+- C3. A SNARK-verifiable semantic-group Exact SHAP top-3 method for public Logistic Regression with fixed reference masking.
+- C4. A reproducible case-study evaluation covering IDS performance, explanation stability, proxy-vs-ExactSHAP comparison, proof cost, output leakage, reference sensitivity, model-version binding, and negative tests.
 
-### ZK (Stage 3)
-- **Node.js** (LTS recommended)
-- **Circom 2.1.9**
-- **snarkjs**
-- (Optional) PowerShell (if you use `.ps1` script on Windows)
+## Documentation (start here)
 
----
+- **Thesis-oriented project map (recommended):** `reports/thesis_project_map.md`
+- Stage 1 dataset + protocol summary: `reports/dataset_summary.md`
+- Stage 2 explainability summary: `reports/stage2_summary.md`
+- Semantic-group Exact SHAP extension: `reports/exact_shap_semantic_groups.md`, `reports/method_choice_exact_shap.md`, and `reports/stage34_thesis_integration.md`
+- Model visibility / hidden-model future work: `reports/model_visibility_threat_model.md`
+- Model registry / verifier policy: `reports/model_registry_and_verifier_policy.md`
+- Output leakage and reference sensitivity: `reports/stage34_output_leakage_audit.md`, `reports/exact_shap_reference_sensitivity.md`
+- Stage 3 ZK system summary: `stage3_zk/reports/FINAL_SUMMARY.md`
+- Full report index (all markdown + where figures live): `reports/README.md`
 
-## Environment Setup
-### Option A — Conda (recommended)
-```bash
-conda create -n zkxids python=3.10 -y
-conda activate zkxids
-pip install -r requirements.txt
-```
+## Quickstart (no notebooks required if artifacts already exist)
 
-### Option B — venv
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
+1) Install Python 3.10+ (Conda recommended).
+2) Install dependencies:
+  - For thesis-grade ML reproduction, use the canonical Conda Python 3.10 environment (`py310` in the examples below).
+  - `requirements.in` lists the direct ML dependencies used by the pipeline.
+  - `requirements.lock.txt` is currently a lightweight auxiliary lock file and should not be treated as the full ML environment lock.
+3) Run a consistency check (feature order + required artifacts):
+  - `python tools/reproduce.py check`
+4) Generate the full thesis-grade ML evaluation pack (reports + figures):
+  - `python tools/reproduce.py all-eval --ratios "0.25,0.5,1,2,5,10,20,50,100"`
+  - PowerShell note: the `--ratios` value must be quoted exactly like above.
 
----
+If you want strict, warning-free reproducibility for pickled baseline models, run under the canonical Conda env (example name: `py310`):
+- `conda run -n py310 python tools/reproduce.py all-eval --ratios "0.25,0.5,1,2,5,10,20,50,100"`
 
-## Dataset Setup (TON_IoT)
-Place processed CSV files here (example):
-```
-data/ton_iot/processed/
-  ├── *.csv   (23 files)
-```
+## Full pipeline (regenerate everything from data)
 
-Recommended `.gitignore`:
-```
-data/
-outputs/
-**/*.zkey
-**/*.r1cs
-**/*.wasm
-```
+If you need to regenerate the ML pipeline outputs from scratch, run notebooks in order:
+- `notebooks/01_data_sanity_check.ipynb`
+- `notebooks/02_train_val_test_split.ipynb`
+- `notebooks/03_preprocessing_pipeline.ipynb`
+- `notebooks/04_train_and_evaluate_baseline.ipynb`
+- `notebooks/05_stage2_topk_explainability.ipynb`
+- `notebooks/05b_stage2_semantic_grouping.ipynb`
+- `notebooks/06_stage3_prepare_artifacts.ipynb`
 
----
+For ZK-XIDS execution, see `stage3_zk/README.md` and `stage3_zk/reports/FINAL_SUMMARY.md`.
 
-## How to Reproduce (End-to-End)
+### Reproducibility helpers
 
-### Stage 1 — Data sanity + splits + leakage analysis
-Run notebooks in order:
-1. `notebooks/01_data_sanity_check.ipynb`
-2. `notebooks/02_train_val_test_split.ipynb`
-3. `notebooks/03_preprocessing_pipeline.ipynb`
+- One-command evaluation pack (generates all ML evaluation reports + figures):
+  - `python tools/reproduce.py all-eval --ratios "0.25,0.5,1,2,5,10,20,50,100"`
+  - (Optional) include ZK scaling benchmark: add `--include-zk-scale`
 
-**Expected outputs (examples):**
-- `outputs/splits/train.csv`, `outputs/splits/val.csv`, `outputs/splits/test.csv`
-- Stage 1 report files under `reports/` or exported markdown/figures in `outputs/`
+- Artifact consistency checks (104 features, identical feature order across ML-to-ZK):
+  - `python tools/reproduce.py check`
+- Baseline evaluation with imbalance-aware metrics (adds specificity/FPR, MCC, threshold tuning on validation):
+  - `python tools/reproduce.py metrics`
+  - Thesis-friendly summary: `reports/baseline_extended_metrics.md`
+- Decision-engineering evaluation (tradeoff curves + calibration + operating points):
+  - `python tools/reproduce.py eval`
+  - Thesis-friendly artifact: `reports/decision_engineering_baselines.md` + figures under `reports/figures/`
+- Drift/robustness check (metric stability across ordered test chunks):
+  - `python tools/reproduce.py drift --chunks 20`
+  - Thesis-friendly artifact: `reports/drift_chunks.md` + figures under `reports/figures/`
+- Semantic-group ablation (raw group frequency vs size-normalized frequency):
+  - `python tools/reproduce.py semantic-groups`
+  - Thesis-friendly artifact: `reports/semantic_group_ablation.md` + figures under `reports/figures/`
+- Semantic-group Exact SHAP + Stage 3.4 verification:
+  - `python tools/eval_exact_shap_semantic_groups.py`
+  - `python tools/reproduce.py zk-stage34 --samples 1,2,3`
+  - Optional policy/evidence helpers: `python tools/generate_model_registry.py`, `python tools/verify_stage34_policy.py --self-test`, `python tools/benchmark_stage34.py --sample 1 --runs 30 --warmup 2`
+  - Thesis-friendly artifacts: `outputs/explainability/exact_shap_semantic_groups.csv`, `reports/exact_shap_semantic_groups.md`, `reports/method_choice_exact_shap.md`, `reports/stage34_thesis_integration.md`, `reports/stage34_case_studies.md`, `reports/stage34_output_leakage_audit.md`, `reports/exact_shap_reference_sensitivity.md`, `stage3_zk/reports/STAGE34_PROOF_REPORT.md`
+- ZK scaling benchmark (prove/verify timing p50/p95 across many runs):
+  - `python tools/reproduce.py zk-scale --stage 33 --sample 1 --runs 30 --warmup 2`
+  - Thesis-friendly artifact: `stage3_zk/reports/zk_scaling_benchmark.md`
+- Cost-based threshold selection (explicit FN/FP cost ratios):
+  - `python tools/reproduce.py cost --ratios "0.25,0.5,1,2,5,10,20,50,100"`
+  - Thesis-friendly artifact: `reports/cost_based_thresholds.md`
 
-> Tip: Use a fixed `SEED` and save it in `outputs/metadata.json` for reproducibility.
+### Thesis artifact index (quick links)
 
----
+Core ML evaluation:
+- `reports/baseline_extended_metrics.md`
+- `reports/decision_engineering_baselines.md` (plus `reports/figures/decision_engineering_*`)
+- `reports/drift_chunks.md` (plus `reports/figures/drift_chunks_*`)
+- `reports/semantic_group_ablation.md` (plus `reports/figures/semantic_group_ablation_*`)
+- `reports/cost_based_thresholds.md` (plus `reports/figures/cost_thresholds_*`)
 
-### Stage 2 — Baselines + top-k explainability + stability/overlap
-4. `notebooks/04_train_and_evaluate_baseline.ipynb`
-5. `notebooks/05_stage2_topk_explainability.ipynb`
+ZK evaluation:
+- `stage3_zk/reports/FINAL_SUMMARY.md`
+- `stage3_zk/reports/zk_scaling_benchmark.md`
+- `stage3_zk/reports/STAGE34_PROOF_REPORT.md`
+- `stage3_zk/reports/zk_stage34_scaling_benchmark.md`
 
-**Expected outputs (typical):**
-- Models: `outputs/models/*`
-- Metrics: `outputs/metrics/*.json`
-- Explainability artifacts:
-  - `top10_frequency_*.csv`
-  - `semantic_group_frequency_*.csv`
-  - `stability_summary.json`, `overlap_summary.json`
-  - `semantic_stability_summary.json`, `semantic_overlap_summary.json`
-  - `diversity_analysis.json`
-  - `fig_top10_*.png`, `fig_semantic_groups_*.png`
+For a single page listing of *all* markdown artifacts and where to find figures, see: `reports/README.md`.
 
-**Reproduction check:**
-- You should have both **LogReg** and **XGBoost** outputs.
-- JSON summaries should be non-empty and match figures/tables referenced in `reports/`.
+#### Note on environments (important)
 
----
+The baseline models under `outputs/models/*.pkl` were originally trained from the notebooks in a **Conda Python 3.10** environment.
+If you run `metrics` under a different Python / scikit-learn / xgboost version, you may see warnings when loading the pickles.
 
-## Stage 3 — ZK-XIDS (Circom + Groth16) with scripts ✅
-> You said you already have scripts. This section uses them directly.
+For strict, warning-free reproducibility, regenerate baselines and metrics inside the same Conda env (example env name: `py310`):
+- Retrain + overwrite baseline model artifacts:
+  - `conda run -n py310 python tools/train_baselines.py`
+- Recompute imbalance-aware baseline metrics:
+  - `conda run -n py310 python tools/reproduce.py metrics`
+- Generate operating-point curves + calibration figures:
+  - `conda run -n py310 python tools/reproduce.py eval`
+- Generate drift/robustness chunk plots:
+  - `conda run -n py310 python tools/reproduce.py drift --chunks 20`
+- Generate semantic-group ablation report + plots:
+  - `conda run -n py310 python tools/reproduce.py semantic-groups`
+- Generate ZK scaling benchmark report (may take a few minutes for 30+ runs):
+  - `conda run -n py310 python tools/reproduce.py zk-scale --stage 33 --sample 1 --runs 30 --warmup 2`
+- Generate cost-based threshold report + plots:
+  - `conda run -n py310 python tools/reproduce.py cost --ratios "0.25,0.5,1,2,5,10,20,50,100"`
+- One-command evaluation pack (recommended for defense):
+  - `conda run -n py310 python tools/reproduce.py all-eval --ratios "0.25,0.5,1,2,5,10,20,50,100"`
+  - include ZK scaling benchmark: add `--include-zk-scale`
 
-Go to the ZK folder:
-```bash
-cd stage3_zk
-```
-
-### Stage 3.1 — Full pipeline (setup → input → circuit → proof → verify → benchmark)
-#### 0) Setup
-```bash
-bash "scripts/stage 3.1/00_setup.sh"
-```
-
-#### 1) Prepare inputs (Python)
-```bash
-python "scripts/stage 3.1/01_prepare_input.py"
-```
-
-#### 2) Build circuit
-- **Windows / PowerShell** (as your script indicates):
-```powershell
-powershell -ExecutionPolicy Bypass -File "scripts/stage 3.1/02_build_circuit.ps1"
-```
-- **Linux/macOS**: if you have an equivalent `.sh` build script, run it here.  
-  (If not, keep using Windows for circuit build, then copy artifacts back.)
-
-#### 3) Generate proof
-```bash
-bash "scripts/stage 3.1/03_generate_proof.sh"
-```
-
-#### 4) Verify proof
-```bash
-bash "scripts/stage 3.1/04_verify_proof.sh"
-```
-
-#### 5) Benchmark
-```bash
-python "scripts/stage 3.1/05_benchmark.py"
-node "scripts/stage 3.1/benchmark_optimized.js"
-```
-
-**Expected outputs (examples you already have):**
-- `proof_sample_*.json`, `public_sample_*.json`
-- `benchmark_results.json`, `benchmark_optimized.json`
-
----
-
-### Stage 3.2 — Generate/verify stage 3.2 proofs
-Run the scripts inside `scripts/stage 3.2/` in the same order (setup → prepare → build → prove → verify → benchmark).  
-**Expected outputs:**
-- `proof_stage32_sample_*.json`, `public_stage32_sample_*.json`
-- `benchmark_stage32.json`
-
----
-
-### Stage 3.3 — Generate/verify stage 3.3 proofs
-Run the scripts inside `scripts/stage 3.3/` in the same order.  
-**Expected outputs:**
-- `proof_stage33_sample_*.json`, `public_stage33_sample_*.json`
-- `benchmark_stage33.json`
-
----
-
-## Troubleshooting
-- If `circom` is not found:
-  - ensure `circom` is installed and available in PATH: `circom --version`
-- If `snarkjs` is not found:
-  - `npm i -g snarkjs` (or follow your local setup)
-- If dataset is too large for local runs:
-  - add a `SAMPLE_FRAC` option in notebooks/scripts (e.g., 0.05–0.20)
-  - or run a subset of CSV files for reproduction
-
----
-
-## Documentation
-- Stage reports: `reports/`
-- ZK outputs + scripts: `stage3_zk/`
-- Final ZK summary (if present): `stage3_zk/reports/FINAL_SUMMARY.md`
-
----
-
-## Repository Name Suggestion
-**zk-xids-toniot**
-
----
+If you prefer not to use Conda, you can also re-run `notebooks/04_train_and_evaluate_baseline.ipynb` under your chosen pinned environment.
+- ZK test harness (prepare inputs + witness smoke + Stage 3.3 security tests):
+  - `python tools/reproduce.py zk --stage all --samples 1,2,3`
+  - or from `stage3_zk/`: `npm run test:zk`
+  - quick mode (no WASM/witness required): `python tools/reproduce.py zk --stage all --no-witness-smoke` or `npm run test:zk:quick`
+  - clean mode (removes stale generated inputs/witness/proofs): `python tools/reproduce.py zk --stage all --clean` or `npm run test:zk:clean`
+  - full end-to-end (build + witness + prove + verify): `npm run test:zk:full`
+  - evidence report (writes JSON+MD under `stage3_zk/reports/`): `cd stage3_zk; npm run evidence:zk:quick` or `npm run evidence:zk:full`
+    - The stable, thesis-friendly artifact is: `stage3_zk/reports/LATEST_REPRO_REPORT.md` (includes a "Complexity & Communication" table with constraint counts and artifact sizes)
+  - validate existing Stage 3.3 proof public signals (opt-in): `npm run test:stage33:validate` (or `python tools/reproduce.py zk --stage 33 --validate-proofs`)
 
 ## References
 - TON_IoT Dataset: https://research.unsw.edu.au/projects/toniot-datasets

@@ -158,7 +158,7 @@ def main():
     
     for pattern, count in attack_counter.most_common(5):
         pct = count / len(top3_attack) * 100
-        pattern_str = " → ".join([group_names[gid-1] for gid in pattern])
+            pattern_str = " -> ".join([group_names[gid-1] for gid in pattern])
         print(f"  {pattern}  ({pct:5.1f}%)  {pattern_str}")
     
     print(f"\n--- Top-3 Normal Patterns ---")
@@ -166,7 +166,7 @@ def main():
     
     for pattern, count in normal_counter.most_common(5):
         pct = count / len(top3_normal) * 100
-        pattern_str = " → ".join([group_names[gid-1] for gid in pattern])
+            pattern_str = " -> ".join([group_names[gid-1] for gid in pattern])
         print(f"  {pattern}  ({pct:5.1f}%)  {pattern_str}")
     
     # Jaccard similarity
@@ -185,9 +185,9 @@ def main():
     print(f"  (0 = completely different, 1 = identical)")
     
     if jaccard < 0.5:
-        print(f"  ✅ LOW similarity → Attack/Normal have DISTINCT profiles")
+        print("  LOW similarity - Attack/Normal have distinct profiles")
     else:
-        print(f"  ⚠️  HIGH similarity → Patterns overlap significantly")
+        print("  HIGH similarity - Patterns overlap significantly")
     
     print(f"\nShared patterns: {len(intersection)}/{len(union)}")
     print(f"Attack-only patterns: {len(attack_set - normal_set)}")
@@ -268,20 +268,20 @@ def main():
     print(f"   Saved: {output_file}")
     
     print("\n" + "=" * 60)
-    print("✅ Diversity test complete!")
+    print("Diversity test complete")
     print("=" * 60)
     
     # Thesis implications
-    print("\n📊 THESIS IMPLICATIONS:")
+    print("\nTHESIS IMPLICATIONS:")
     if unique_attack + unique_normal >= 8:
-        print("  ✅ High diversity → Explanations are INPUT-SENSITIVE")
+        print("  High diversity - Explanations are input-sensitive")
     else:
-        print("  ⚠️  Low diversity → May need more samples or feature engineering")
+        print("  Low diversity - May need more samples or feature engineering")
     
     if jaccard < 0.5:
-        print("  ✅ Low Jaccard → Attack/Normal have DISTINCT patterns")
+        print("  Low Jaccard - Attack/Normal have distinct patterns")
     else:
-        print("  ℹ️  High Jaccard → Similar patterns (may be dataset-specific)")
+        print("  High Jaccard - Similar patterns (may be dataset-specific)")
     
     print("\n  Use these results in Section 7.1.2 of thesis report!")
 

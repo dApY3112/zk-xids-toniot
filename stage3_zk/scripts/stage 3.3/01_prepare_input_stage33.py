@@ -63,7 +63,7 @@ def compute_top3_and_others(G):
 def check_bounds(score, B):
     """Verify score is within circuit bounds"""
     if abs(score) > B:
-        print(f"❌ ERROR: Score {score} exceeds bound B={B}")
+        print(f"ERROR: Score {score} exceeds bound B={B}")
         print(f"   |score| = {abs(score)}, max allowed = {B}")
         return False
     return True
@@ -120,16 +120,16 @@ def prepare_input(test_sample_id=1):
     # Verify shifted values are in valid range
     for i, xs in enumerate(x_shifted):
         if xs < 0 or xs > 2 * maxAbsX:
-            print(f"❌ ERROR: x_shifted[{i}] = {xs} out of range [0, {2*maxAbsX}]")
+            print(f"ERROR: x_shifted[{i}] = {xs} out of range [0, {2*maxAbsX}]")
             sys.exit(1)
     
     for i, ws in enumerate(w_shifted):
         if ws < 0 or ws > 2 * maxAbsW:
-            print(f"❌ ERROR: w_shifted[{i}] = {ws} out of range [0, {2*maxAbsW}]")
+            print(f"ERROR: w_shifted[{i}] = {ws} out of range [0, {2*maxAbsW}]")
             sys.exit(1)
     
     if b_shifted < 0 or b_shifted > 2 * B:
-        print(f"❌ ERROR: b_shifted = {b_shifted} out of range [0, {2*B}]")
+        print(f"ERROR: b_shifted = {b_shifted} out of range [0, {2*B}]")
         sys.exit(1)
     
     # Compute semantic groups
@@ -158,7 +158,7 @@ def prepare_input(test_sample_id=1):
     # Print summary
     group_names = group_map["groups"]
     
-    print(f"✅ Prepared Stage 3.3 circuit input: {output_file}")
+    print(f"OK: Prepared circuit input: {output_file}")
     print(f"   Sample: {test_vec['label']}")
     print(f"   Features: {n}")
     print(f"   Score: {score}")
@@ -174,7 +174,7 @@ def prepare_input(test_sample_id=1):
     groups_display.sort(key=lambda x: x[2], reverse=True)
     
     for rank, (gid, name, val) in enumerate(groups_display, 1):
-        marker = "⭐" if gid in top3_ids else "  "
+        marker = "*" if gid in top3_ids else " "
         print(f"   {marker} [{rank}] Group {gid} {name:20s}: {val:,}")
     
     print(f"\n   Top-3 explanation (public): {top3_ids}")

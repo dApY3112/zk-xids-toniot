@@ -19,7 +19,7 @@ ARTIFACTS_DIR = os.path.join(STAGE3_ZK_DIR, "artifacts")
 TEST_VECTORS_DIR = os.path.join(STAGE3_ZK_DIR, "test_vectors")
 CIRCUIT_DIR = os.path.join(STAGE3_ZK_DIR, "circuits", "top3_explanation")
 BUILD_DIR = os.path.join(CIRCUIT_DIR, "build")
-PROOFS_DIR = os.path.join(BASE_DIR, "outputs", "proofs")
+PROOFS_DIR = os.path.join(STAGE3_ZK_DIR, "outputs", "proofs")
 
 def load_model():
     """Load model weights"""
@@ -131,11 +131,11 @@ def generate_witness(input_data, test_name):
     )
     
     if result.returncode != 0:
-        print(f"   ❌ Witness generation FAILED (expected)")
+        print("   Witness generation failed (expected)")
         print(f"   Error: {result.stderr.strip()}")
         return False
     
-    print(f"   ⚠️  Witness generation SUCCEEDED (unexpected!)")
+    print("   Witness generation succeeded (unexpected)")
     
     # Try to generate proof
     print(f"   Attempting proof generation...")
@@ -159,11 +159,11 @@ def generate_witness(input_data, test_name):
     )
     
     if result.returncode != 0:
-        print(f"   ❌ Proof generation FAILED (expected)")
+        print("   Proof generation failed (expected)")
         print(f"   Error: {result.stderr.strip()}")
         return False
     
-    print(f"   ⚠️  Proof generation SUCCEEDED (SECURITY VIOLATION!)")
+    print("   Proof generation succeeded (SECURITY VIOLATION)")
     return True
 
 def main():
@@ -209,9 +209,9 @@ def main():
     success_dup = generate_witness(input_dup, "duplicate")
     
     if success_dup:
-        print("\n   🚨 SECURITY VIOLATION: Circuit accepted duplicate other2!")
+        print("\n   SECURITY VIOLATION: Circuit accepted duplicate other2")
     else:
-        print("\n   ✅ PASS: Circuit correctly rejected duplicate other2")
+        print("\n   PASS: Circuit correctly rejected duplicate other2")
     
     # Test Case 2: Permutation violation (reuse group from top3)
     print("\n[4/4] Test Case 2: Permutation violation")
@@ -225,9 +225,9 @@ def main():
     success_perm = generate_witness(input_perm, "permutation")
     
     if success_perm:
-        print("\n   🚨 SECURITY VIOLATION: Circuit accepted permutation violation!")
+        print("\n   SECURITY VIOLATION: Circuit accepted permutation violation")
     else:
-        print("\n   ✅ PASS: Circuit correctly rejected permutation violation")
+        print("\n   PASS: Circuit correctly rejected permutation violation")
     
     # Test Case 3: Out-of-range group ID
     print("\n[5/5] Test Case 3: Out-of-range group ID")
@@ -241,9 +241,9 @@ def main():
     success_range = generate_witness(input_range, "out_of_range")
     
     if success_range:
-        print("\n   🚨 SECURITY VIOLATION: Circuit accepted out-of-range group ID!")
+        print("\n   SECURITY VIOLATION: Circuit accepted out-of-range group ID")
     else:
-        print("\n   ✅ PASS: Circuit correctly rejected out-of-range group ID")
+        print("\n   PASS: Circuit correctly rejected out-of-range group ID")
     
     # Summary
     print("\n" + "=" * 70)
@@ -260,18 +260,18 @@ def main():
     total = len(tests)
     
     for test_name, success in tests:
-        status = "❌ FAIL (circuit vulnerable)" if success else "✅ PASS"
+        status = "FAIL (circuit vulnerable)" if success else "PASS"
         print(f"   {test_name:30s}: {status}")
     
     print(f"\n   Tests passed: {passed}/{total}")
     
     if passed == total:
-        print("\n   ✅ ALL TESTS PASSED: Circuit defends against malicious witness attacks")
+        print("\n   ALL TESTS PASSED: Circuit defends against malicious witness attacks")
         print("\n   Thesis implication: Circuit enforces all-distinct, permutation,")
         print("   and range constraints, preventing prover from manipulating other2")
         print("   witness to bypass dominance checks.")
     else:
-        print("\n   🚨 SECURITY ISSUES FOUND: Some attacks succeeded!")
+        print("\n   SECURITY ISSUES FOUND: Some attacks succeeded")
         print("   Review circuit constraints to fix vulnerabilities.")
     
     print("\n" + "=" * 70)

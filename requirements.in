@@ -1,0 +1,12 @@
+# Direct (top-level) dependencies for the ML pipeline
+numpy
+pandas
+scikit-learn
+xgboost
+joblib
+matplotlib
+
+# Optional (uncomment if you use them)
+# seaborn
+# tqdm
+# jupyter

@@ -1,0 +1,59 @@
+{
+  "created_utc": "2026-05-22T15:25:29+00:00",
+  "stage": "3.4",
+  "model_visibility": "public",
+  "input_visibility": "private witness",
+  "proof_system": "Circom + Groth16",
+  "model_type": "Logistic Regression",
+  "feature_count": 104,
+  "artifacts": [
+    {
+      "path": "stage3_zk/artifacts/model_public.json",
+      "status": "present",
+      "sha256": "0055e2d36375c49093917ddfe235050610b82d5fe29c39872461aada5ecb1c40",
+      "bytes": 1294
+    },
+    {
+      "path": "stage3_zk/artifacts/feature_order.json",
+      "status": "present",
+      "sha256": "7aab99865e47fb6d4d0905a0050845ea4595e60f615c6594200ab64128dabdcc",
+      "bytes": 2734
+    },
+    {
+      "path": "stage3_zk/artifacts/group_map.json",
+      "status": "present",
+      "sha256": "0d4262b101371dd47c90c81782955025117ad464e98943defa2f32ebb0c23d31",
+      "bytes": 3340
+    },
+    {
+      "path": "stage3_zk/artifacts/bounds.json",
+      "status": "present",
+      "sha256": "c534c3f4d7814c34fbe19c6accf6ab20ce9326b800cc06473da2c0e7ec78c143",
+      "bytes": 185
+    },
+    {
+      "path": "stage3_zk/artifacts/exact_shap_reference.json",
+      "status": "present",
+      "sha256": "b9bae6eb00690b03d6ac3602e6aa006f96b0fd12a48f2db3982b03ff818fe21e",
+      "bytes": 4231
+    },
+    {
+      "path": "stage3_zk/circuits/exact_shap_top3/exact_shap_top3.circom",
+      "status": "present",
+      "sha256": "0ca1466fcddbd8b5ceb017279fb800cdfc05e89dea9b22bdba7edea237588fb7",
+      "bytes": 8534
+    },
+    {
+      "path": "stage3_zk/circuits/exact_shap_top3/build/verification_key.json",
+      "status": "present",
+      "sha256": "af7eab790ffc40d47bfcf4bd90208dd1aa0503d31c91feed59fe240a33ce8a74",
+      "bytes": 22671
+    }
+  ],
+  "combined_sha256": "2f05fc6162c9a57bfd33c91ef43d10ce3d1ba7f55c0fa61189191aff11ef1c59",
+  "notes": [
+    "This registry is a verifier-policy artifact, not a hidden-model commitment.",
+    "Missing optional files are recorded instead of failing generation.",
+    "The verifier should approve the combined digest before accepting Stage 3.4 proofs for a model version."
+  ]
+}
