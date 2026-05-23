@@ -100,6 +100,10 @@ For Stage 3.4, proof verification should be paired with a verifier-side model po
 
 The circuit hides raw input features and the exact semantic-group SHAP values. It intentionally reveals `y_hat` and the top-3 semantic group IDs because these are the certified IDS decision and explanation summary. The resulting privacy claim is input-feature privacy, not complete behavioral secrecy. See `reports/stage34_output_leakage_audit.md` for a distributional audit of these public outputs.
 
+## Input Provenance and Audit Binding
+
+Stage 3.4 proves that the public prediction and top-3 semantic explanation are consistent with the same private witness. It does not, by itself, prove that the witness came from a specific external log row or previously registered event. A deployment that needs this stronger audit guarantee can add an input commitment at ingestion time and require the proof to open that public commitment inside the circuit. This is useful for provenance and cross-proof consistency, but it is separate from the input-feature privacy provided by the private witness and is outside the implemented Stage 3.4 claim.
+
 ## Reference Sensitivity
 
 The implemented Stage 3.4 circuit fixes the training-mean reference vector. Alternative reference vectors are not additional ZK claims, but an offline sensitivity analysis is useful for critical self-assessment. See `reports/exact_shap_reference_sensitivity.md`.

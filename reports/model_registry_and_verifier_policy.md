@@ -18,6 +18,12 @@ Therefore, an input commitment is not required for input privacy in the current 
 
 Those are useful system features, but they are not prerequisites for the current privacy claim.
 
+## Input Provenance and Audit Binding
+
+The implemented Stage 3.4 proof certifies that the public prediction and top-3 semantic explanation are consistent with some private witness `x_shifted[104]`. By itself, this does not prove that the witness came from a particular external SIEM row, network-flow log entry, hospital record, or other audit record. That binding belongs to a provenance layer outside the implemented proof relation.
+
+For deployments that require this stronger audit property, an input commitment can be added as an extension. A data-ingestion component would record a commitment such as `C_x = Hash(x_shifted, metadata, salt)` at the time the event is captured, and the circuit would check that the private witness opens to the public commitment. The verifier could then accept a proof only when the proof verifies and the public commitment matches the registered event. This strengthens auditability and cross-proof consistency, but it is distinct from input privacy and is not implemented in the current Stage 3.4 circuit.
+
 ## Public Model Binding
 
 Because the Logistic Regression model is public, model binding can be handled outside the circuit by verifier policy. The verifier should not accept an arbitrary public weight vector merely because a proof verifies. The verifier must also check that the public model artifacts match an approved public model version.
@@ -89,7 +95,7 @@ That design would bind a private model to a public commitment. It is future work
 | Verified top-3 semantic explanation | Implemented |
 | Verified semantic-group Exact SHAP | Implemented in Stage 3.4 |
 | Public model registry / model-version binding | Thesis-level verifier policy |
-| Input commitment | Optional future work |
+| Input commitment | Optional future work for provenance, audit binding, or cross-proof consistency |
 | Hidden model commitment | Future work |
 | Sumcheck/GKR | Future work |
 | Partition SHAP | Future work |

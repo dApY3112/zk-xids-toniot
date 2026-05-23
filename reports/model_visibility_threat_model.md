@@ -27,6 +27,12 @@ The prover supplies `x_shifted[104]` as private witness values to the Groth16 ci
 
 This is the correct answer if asked: "the input is hidden as private witness data inside the SNARK; the verifier sees only the proof and the declared public outputs."
 
+## Input Privacy vs Input Provenance
+
+The current proof hides the processed feature vector during verification, but it does not by itself bind the hidden witness to a specific external record. A Stage 3.4 proof shows that there exists some private `x_shifted[104]` satisfying the approved model, prediction, and top-3 Exact SHAP relation. If an auditor also needs to know that this was the same input as a particular SIEM event, log row, or previously registered data record, the deployment needs an additional provenance mechanism.
+
+One natural extension is an input commitment recorded at data ingestion time, for example `C_x = Hash(x_shifted, metadata, salt)`, with the circuit later checking that the private witness opens to the public commitment. This would provide audit binding or cross-proof consistency while keeping the feature values hidden. It is not required for input-feature privacy and is not implemented in the current Stage 3.4 circuit.
+
 ## Why Public Model Is Still a Defensible Thesis Scope
 
 Public model does not mean weak privacy. It means the thesis studies a different threat model:
