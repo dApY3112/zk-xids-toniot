@@ -34,6 +34,7 @@ WITNESS_GEN = BUILD_DIR / "exact_shap_top3_js" / "generate_witness.js"
 ZKEY_0000 = BUILD_DIR / "exact_shap_top3_0000.zkey"
 ZKEY_FINAL = BUILD_DIR / "exact_shap_top3_final.zkey"
 VKEY = BUILD_DIR / "verification_key.json"
+PREPARE_INPUT = SCRIPT_DIR / "01_prepare_input_stage34.py"
 
 
 def _utc_now_iso() -> str:
@@ -198,6 +199,17 @@ def prove_and_verify(sample_id: int) -> Dict[str, object]:
     }
 
 
+def prepare_inputs(samples: Sequence[int]) -> List[Dict[str, object]]:
+    steps: List[Dict[str, object]] = []
+    _require([PREPARE_INPUT])
+    for sample_id in samples:
+        step = _timed([sys.executable, str(PREPARE_INPUT), str(int(sample_id))], timeout=120)
+        step["step"] = f"prepare_input_sample_{sample_id}"
+        step["status"] = "PASS" if step["returncode"] == 0 else "FAIL"
+        steps.append(step)
+    return steps
+
+
 def write_reports(payload: Dict[str, object]) -> None:
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     out_json = REPORTS_DIR / "STAGE34_PROOF_REPORT.json"
@@ -243,9 +255,10 @@ def write_reports(payload: Dict[str, object]) -> None:
 
     lines.append("\n## Limitations\n\n")
     lines.append("- Public-model, private-input only; model confidentiality is not implemented.\n")
+    lines.append("- Model-agnostic verification, differential privacy, and input-provenance binding are not implemented in Stage 3.4.\n")
     lines.append("- Exact SHAP verification is specialized to Logistic Regression with fixed reference masking.\n")
     lines.append("- The reference vector is fixed by the circuit artifact; changing it requires a changed circuit/setup.\n")
-    lines.append("- Sumcheck/GKR and Partition SHAP are not implemented.\n")
+    lines.append("- Sumcheck/GKR, Partition SHAP, and XGBoost-in-ZK are not implemented.\n")
 
     with out_md.open("w", encoding="utf-8") as f:
         f.writelines(lines)
@@ -269,6 +282,13 @@ def main(argv: Sequence[str] | None = None) -> int:
             print((step.get("stderr") or step.get("stdout") or "")[-2000:])
             return 1
 
+    prepare_steps = prepare_inputs(samples)
+    for step in prepare_steps:
+        print(f"{step['status']}: {step['step']} ({step.get('duration_ms', 0)} ms)")
+        if step.get("status") == "FAIL":
+            print((step.get("stderr") or step.get("stdout") or "")[-2000:])
+            return 1
+
     stats = r1cs_info()
     sample_results = []
     for sample_id in samples:
@@ -286,6 +306,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         "started_utc": started,
         "samples": samples,
         "setup_steps": setup_steps,
+        "prepare_steps": prepare_steps,
         "circuit_stats": stats,
         "artifact_sizes": {
             "r1cs_bytes": _file_size(R1CS),

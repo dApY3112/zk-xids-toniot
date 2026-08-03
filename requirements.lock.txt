@@ -1,7 +1,4 @@
-﻿charset-normalizer==3.4.4
-lxml==6.0.2
-pillow==12.1.0
-pypdf==6.6.0
-python-docx==1.2.0
-reportlab==4.4.9
-typing_extensions==4.15.0
+# Meta lock file for the thesis workspace.
+# Use the split files directly when you only need one stack.
+-r requirements-ml.lock.txt
+-r requirements-docs.lock.txt

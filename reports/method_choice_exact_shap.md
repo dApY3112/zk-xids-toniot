@@ -39,4 +39,4 @@ Outputs: `y_hat`, `phi_g(x)`, top-k groups, proof `pi`
 6. The circuit keeps phi_g(x) private and publishes only y_hat plus top-k group IDs.
 ```
 
-This circuit is model-specific to Logistic Regression. No sumcheck protocol, GKR verifier, Partition SHAP implementation, confidential-model proof, or arbitrary-model Exact SHAP circuit has been implemented or tested.
+This circuit is model-specific to Logistic Regression. No model-agnostic verifier, sumcheck protocol, GKR verifier, Partition SHAP implementation, confidential-model proof, arbitrary-model Exact SHAP circuit, or differential privacy mechanism has been implemented or tested. Input-provenance binding is not part of Stage 3.4; it is only explored in the optional Stage 3.5 input-commitment appendix prototype.

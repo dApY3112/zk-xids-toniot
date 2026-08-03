@@ -1,0 +1,860 @@
+{
+  "created_utc": "2026-06-17T09:11:55+00:00",
+  "requested_samples": 30,
+  "proved_samples": 30,
+  "seed": 34030,
+  "curated_vector_files": 8,
+  "excluded_curated_rows_with_metadata": 5,
+  "candidate_normals": 18010,
+  "candidate_attacks": 484601,
+  "temporary_artifacts_retained": false,
+  "summary": {
+    "selected_samples": 30,
+    "witness_pass": 30,
+    "prove_pass": 30,
+    "verify_pass": 30,
+    "public_output_match_pass": 30,
+    "failures": 0
+  },
+  "classification_counts": {
+    "tn": 15,
+    "fp": 0,
+    "fn": 0,
+    "tp": 15
+  },
+  "timing_summary": {
+    "witness": {
+      "count": 30,
+      "min": 64,
+      "max": 934,
+      "mean": 107.267,
+      "median": 74.0
+    },
+    "prove": {
+      "count": 30,
+      "min": 1111,
+      "max": 2403,
+      "mean": 1338.3,
+      "median": 1237.5
+    },
+    "verify": {
+      "count": 30,
+      "min": 667,
+      "max": 1072,
+      "mean": 771.7,
+      "median": 745.5
+    }
+  },
+  "sample_results": [
+    {
+      "batch_id": 1,
+      "row_in_test_split": 303781,
+      "dataset_index": 2676229,
+      "y_true": 1,
+      "y_hat": 1,
+      "top3_ids": [
+        3,
+        1,
+        5
+      ],
+      "top3_groups": [
+        "ConnectionState",
+        "Protocol",
+        "TrafficVolume"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 934,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 805,
+      "public_bytes": 1178,
+      "prove_ms": 2403,
+      "verify_ms": 892
+    },
+    {
+      "batch_id": 2,
+      "row_in_test_split": 97286,
+      "dataset_index": 1318806,
+      "y_true": 0,
+      "y_hat": 0,
+      "top3_ids": [
+        1,
+        2,
+        3
+      ],
+      "top3_groups": [
+        "Protocol",
+        "Application",
+        "ConnectionState"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 80,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 805,
+      "public_bytes": 1178,
+      "prove_ms": 1635,
+      "verify_ms": 795
+    },
+    {
+      "batch_id": 3,
+      "row_in_test_split": 58622,
+      "dataset_index": 2179466,
+      "y_true": 0,
+      "y_hat": 0,
+      "top3_ids": [
+        3,
+        1,
+        5
+      ],
+      "top3_groups": [
+        "ConnectionState",
+        "Protocol",
+        "TrafficVolume"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 113,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 805,
+      "public_bytes": 1178,
+      "prove_ms": 1476,
+      "verify_ms": 1072
+    },
+    {
+      "batch_id": 4,
+      "row_in_test_split": 395029,
+      "dataset_index": 256025,
+      "y_true": 0,
+      "y_hat": 0,
+      "top3_ids": [
+        5,
+        3,
+        1
+      ],
+      "top3_groups": [
+        "TrafficVolume",
+        "ConnectionState",
+        "Protocol"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 82,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 804,
+      "public_bytes": 1178,
+      "prove_ms": 1308,
+      "verify_ms": 803
+    },
+    {
+      "batch_id": 5,
+      "row_in_test_split": 74162,
+      "dataset_index": 2157,
+      "y_true": 0,
+      "y_hat": 0,
+      "top3_ids": [
+        1,
+        3,
+        2
+      ],
+      "top3_groups": [
+        "Protocol",
+        "ConnectionState",
+        "Application"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 77,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 801,
+      "public_bytes": 1178,
+      "prove_ms": 1809,
+      "verify_ms": 744
+    },
+    {
+      "batch_id": 6,
+      "row_in_test_split": 372618,
+      "dataset_index": 1961576,
+      "y_true": 0,
+      "y_hat": 0,
+      "top3_ids": [
+        1,
+        4,
+        3
+      ],
+      "top3_groups": [
+        "Protocol",
+        "Ports",
+        "ConnectionState"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 83,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 799,
+      "public_bytes": 1178,
+      "prove_ms": 1185,
+      "verify_ms": 698
+    },
+    {
+      "batch_id": 7,
+      "row_in_test_split": 479442,
+      "dataset_index": 2099167,
+      "y_true": 1,
+      "y_hat": 1,
+      "top3_ids": [
+        2,
+        3,
+        1
+      ],
+      "top3_groups": [
+        "Application",
+        "ConnectionState",
+        "Protocol"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 72,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 805,
+      "public_bytes": 1178,
+      "prove_ms": 1129,
+      "verify_ms": 714
+    },
+    {
+      "batch_id": 8,
+      "row_in_test_split": 138475,
+      "dataset_index": 2216171,
+      "y_true": 1,
+      "y_hat": 1,
+      "top3_ids": [
+        3,
+        1,
+        5
+      ],
+      "top3_groups": [
+        "ConnectionState",
+        "Protocol",
+        "TrafficVolume"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 72,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 803,
+      "public_bytes": 1178,
+      "prove_ms": 1116,
+      "verify_ms": 693
+    },
+    {
+      "batch_id": 9,
+      "row_in_test_split": 108749,
+      "dataset_index": 168325,
+      "y_true": 0,
+      "y_hat": 0,
+      "top3_ids": [
+        5,
+        3,
+        1
+      ],
+      "top3_groups": [
+        "TrafficVolume",
+        "ConnectionState",
+        "Protocol"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 64,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 806,
+      "public_bytes": 1178,
+      "prove_ms": 1167,
+      "verify_ms": 676
+    },
+    {
+      "batch_id": 10,
+      "row_in_test_split": 482799,
+      "dataset_index": 293283,
+      "y_true": 0,
+      "y_hat": 0,
+      "top3_ids": [
+        5,
+        2,
+        4
+      ],
+      "top3_groups": [
+        "TrafficVolume",
+        "Application",
+        "Ports"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 70,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 798,
+      "public_bytes": 1178,
+      "prove_ms": 1128,
+      "verify_ms": 667
+    },
+    {
+      "batch_id": 11,
+      "row_in_test_split": 441893,
+      "dataset_index": 2942713,
+      "y_true": 1,
+      "y_hat": 1,
+      "top3_ids": [
+        3,
+        4,
+        1
+      ],
+      "top3_groups": [
+        "ConnectionState",
+        "Ports",
+        "Protocol"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 73,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 806,
+      "public_bytes": 1178,
+      "prove_ms": 1156,
+      "verify_ms": 744
+    },
+    {
+      "batch_id": 12,
+      "row_in_test_split": 384883,
+      "dataset_index": 4527,
+      "y_true": 0,
+      "y_hat": 0,
+      "top3_ids": [
+        1,
+        2,
+        3
+      ],
+      "top3_groups": [
+        "Protocol",
+        "Application",
+        "ConnectionState"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 72,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 804,
+      "public_bytes": 1178,
+      "prove_ms": 1111,
+      "verify_ms": 699
+    },
+    {
+      "batch_id": 13,
+      "row_in_test_split": 303384,
+      "dataset_index": 138618,
+      "y_true": 1,
+      "y_hat": 1,
+      "top3_ids": [
+        4,
+        3,
+        1
+      ],
+      "top3_groups": [
+        "Ports",
+        "ConnectionState",
+        "Protocol"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 71,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 807,
+      "public_bytes": 1178,
+      "prove_ms": 1117,
+      "verify_ms": 682
+    },
+    {
+      "batch_id": 14,
+      "row_in_test_split": 97059,
+      "dataset_index": 2216070,
+      "y_true": 0,
+      "y_hat": 0,
+      "top3_ids": [
+        1,
+        2,
+        3
+      ],
+      "top3_groups": [
+        "Protocol",
+        "Application",
+        "ConnectionState"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 76,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 802,
+      "public_bytes": 1178,
+      "prove_ms": 1206,
+      "verify_ms": 667
+    },
+    {
+      "batch_id": 15,
+      "row_in_test_split": 365373,
+      "dataset_index": 2062337,
+      "y_true": 1,
+      "y_hat": 1,
+      "top3_ids": [
+        2,
+        3,
+        1
+      ],
+      "top3_groups": [
+        "Application",
+        "ConnectionState",
+        "Protocol"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 69,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 806,
+      "public_bytes": 1178,
+      "prove_ms": 1235,
+      "verify_ms": 773
+    },
+    {
+      "batch_id": 16,
+      "row_in_test_split": 254316,
+      "dataset_index": 793229,
+      "y_true": 1,
+      "y_hat": 1,
+      "top3_ids": [
+        3,
+        1,
+        2
+      ],
+      "top3_groups": [
+        "ConnectionState",
+        "Protocol",
+        "Application"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 67,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 805,
+      "public_bytes": 1178,
+      "prove_ms": 1387,
+      "verify_ms": 676
+    },
+    {
+      "batch_id": 17,
+      "row_in_test_split": 358093,
+      "dataset_index": 608034,
+      "y_true": 1,
+      "y_hat": 1,
+      "top3_ids": [
+        3,
+        1,
+        2
+      ],
+      "top3_groups": [
+        "ConnectionState",
+        "Protocol",
+        "Application"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 69,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 804,
+      "public_bytes": 1178,
+      "prove_ms": 1244,
+      "verify_ms": 670
+    },
+    {
+      "batch_id": 18,
+      "row_in_test_split": 394930,
+      "dataset_index": 1712305,
+      "y_true": 1,
+      "y_hat": 1,
+      "top3_ids": [
+        4,
+        3,
+        1
+      ],
+      "top3_groups": [
+        "Ports",
+        "ConnectionState",
+        "Protocol"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 67,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 806,
+      "public_bytes": 1178,
+      "prove_ms": 1240,
+      "verify_ms": 970
+    },
+    {
+      "batch_id": 19,
+      "row_in_test_split": 331391,
+      "dataset_index": 2003792,
+      "y_true": 1,
+      "y_hat": 1,
+      "top3_ids": [
+        1,
+        2,
+        3
+      ],
+      "top3_groups": [
+        "Protocol",
+        "Application",
+        "ConnectionState"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 75,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 806,
+      "public_bytes": 1178,
+      "prove_ms": 1361,
+      "verify_ms": 680
+    },
+    {
+      "batch_id": 20,
+      "row_in_test_split": 427698,
+      "dataset_index": 2186305,
+      "y_true": 0,
+      "y_hat": 0,
+      "top3_ids": [
+        1,
+        3,
+        2
+      ],
+      "top3_groups": [
+        "Protocol",
+        "ConnectionState",
+        "Application"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 68,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 805,
+      "public_bytes": 1178,
+      "prove_ms": 1205,
+      "verify_ms": 690
+    },
+    {
+      "batch_id": 21,
+      "row_in_test_split": 301041,
+      "dataset_index": 1716566,
+      "y_true": 1,
+      "y_hat": 1,
+      "top3_ids": [
+        3,
+        1,
+        2
+      ],
+      "top3_groups": [
+        "ConnectionState",
+        "Protocol",
+        "Application"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 65,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 807,
+      "public_bytes": 1178,
+      "prove_ms": 1195,
+      "verify_ms": 870
+    },
+    {
+      "batch_id": 22,
+      "row_in_test_split": 103302,
+      "dataset_index": 2127066,
+      "y_true": 1,
+      "y_hat": 1,
+      "top3_ids": [
+        2,
+        3,
+        1
+      ],
+      "top3_groups": [
+        "Application",
+        "ConnectionState",
+        "Protocol"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 102,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 807,
+      "public_bytes": 1178,
+      "prove_ms": 1290,
+      "verify_ms": 792
+    },
+    {
+      "batch_id": 23,
+      "row_in_test_split": 92517,
+      "dataset_index": 6758,
+      "y_true": 0,
+      "y_hat": 0,
+      "top3_ids": [
+        3,
+        1,
+        5
+      ],
+      "top3_groups": [
+        "ConnectionState",
+        "Protocol",
+        "TrafficVolume"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 73,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 805,
+      "public_bytes": 1178,
+      "prove_ms": 1203,
+      "verify_ms": 730
+    },
+    {
+      "batch_id": 24,
+      "row_in_test_split": 243761,
+      "dataset_index": 2642850,
+      "y_true": 0,
+      "y_hat": 0,
+      "top3_ids": [
+        1,
+        3,
+        2
+      ],
+      "top3_groups": [
+        "Protocol",
+        "ConnectionState",
+        "Application"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 82,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 806,
+      "public_bytes": 1178,
+      "prove_ms": 1201,
+      "verify_ms": 747
+    },
+    {
+      "batch_id": 25,
+      "row_in_test_split": 346449,
+      "dataset_index": 3297379,
+      "y_true": 0,
+      "y_hat": 0,
+      "top3_ids": [
+        5,
+        3,
+        1
+      ],
+      "top3_groups": [
+        "TrafficVolume",
+        "ConnectionState",
+        "Protocol"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 98,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 807,
+      "public_bytes": 1178,
+      "prove_ms": 1260,
+      "verify_ms": 794
+    },
+    {
+      "batch_id": 26,
+      "row_in_test_split": 245063,
+      "dataset_index": 595194,
+      "y_true": 1,
+      "y_hat": 1,
+      "top3_ids": [
+        3,
+        1,
+        2
+      ],
+      "top3_groups": [
+        "ConnectionState",
+        "Protocol",
+        "Application"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 72,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 807,
+      "public_bytes": 1178,
+      "prove_ms": 1231,
+      "verify_ms": 823
+    },
+    {
+      "batch_id": 27,
+      "row_in_test_split": 353685,
+      "dataset_index": 2198509,
+      "y_true": 0,
+      "y_hat": 0,
+      "top3_ids": [
+        3,
+        4,
+        1
+      ],
+      "top3_groups": [
+        "ConnectionState",
+        "Ports",
+        "Protocol"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 109,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 803,
+      "public_bytes": 1178,
+      "prove_ms": 1480,
+      "verify_ms": 805
+    },
+    {
+      "batch_id": 28,
+      "row_in_test_split": 256390,
+      "dataset_index": 2298853,
+      "y_true": 0,
+      "y_hat": 0,
+      "top3_ids": [
+        1,
+        3,
+        4
+      ],
+      "top3_groups": [
+        "Protocol",
+        "ConnectionState",
+        "Ports"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 93,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 807,
+      "public_bytes": 1178,
+      "prove_ms": 1816,
+      "verify_ms": 907
+    },
+    {
+      "batch_id": 29,
+      "row_in_test_split": 71100,
+      "dataset_index": 1286048,
+      "y_true": 1,
+      "y_hat": 1,
+      "top3_ids": [
+        3,
+        1,
+        2
+      ],
+      "top3_groups": [
+        "ConnectionState",
+        "Protocol",
+        "Application"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 86,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 807,
+      "public_bytes": 1178,
+      "prove_ms": 1550,
+      "verify_ms": 855
+    },
+    {
+      "batch_id": 30,
+      "row_in_test_split": 384646,
+      "dataset_index": 1704176,
+      "y_true": 1,
+      "y_hat": 1,
+      "top3_ids": [
+        3,
+        1,
+        5
+      ],
+      "top3_groups": [
+        "ConnectionState",
+        "Protocol",
+        "TrafficVolume"
+      ],
+      "witness_status": "PASS",
+      "witness_ms": 84,
+      "prove_status": "PASS",
+      "verify_status": "PASS",
+      "public_signal_count": 109,
+      "public_outputs_match": true,
+      "proof_bytes": 804,
+      "public_bytes": 1178,
+      "prove_ms": 1305,
+      "verify_ms": 823
+    }
+  ]
+}

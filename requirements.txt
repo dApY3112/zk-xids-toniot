@@ -1,2 +1,2 @@
-# Install pinned, reproducible environment
+# Install pinned direct dependencies for the thesis workspace.
 -r requirements.lock.txt

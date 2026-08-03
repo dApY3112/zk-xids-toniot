@@ -15,9 +15,13 @@
     "test:stage33:validate": "python scripts/run_stage3_tests.py --stage 33 --validate-proofs",
     "test:stage33:clean": "python scripts/run_stage3_tests.py --stage 33 --clean",
     "test:stage33:full": "python scripts/run_stage3_tests.py --stage 33 --build --clean --prove --verify",
+    "prepare:stage34:vectors": "python \"scripts/stage 3.4/00_select_diverse_test_vectors.py\"",
     "test:stage34:witness": "python \"scripts/stage 3.4/03_witness_smoke_stage34.py\" 1",
-    "test:stage34:negative": "python \"scripts/stage 3.4/test_stage34_negative.py\" 1",
-    "evidence:stage34": "python \"scripts/stage 3.4/04_run_phase_c_stage34.py\" --samples 1,2,3"
+    "test:stage34:negative": "python \"scripts/stage 3.4/test_stage34_negative.py\" 1,2,3,4,5,6,7,8",
+    "evidence:stage34": "python \"scripts/stage 3.4/04_run_phase_c_stage34.py\" --samples 1,2,3,4,5,6,7,8",
+    "compile:stage35": "powershell -ExecutionPolicy Bypass -File \"scripts/stage 3.5/00_compile_circuit_stage35.ps1\"",
+    "prepare:stage35": "python \"scripts/stage 3.5/01_prepare_input_stage35.py\" 1",
+    "evidence:stage35": "python \"scripts/stage 3.5/02_run_stage35_commitment.py\" --samples 1,7,8"
   },
   "dependencies": {
     "circom": "^0.5.46",

@@ -283,6 +283,11 @@ def _write_exact_report(
     lines.append(f"- Output CSV: `{csv_path.as_posix()}`\n")
     lines.append("- SHAP players: five semantic groups\n")
     lines.append("- Exact SHAP top-3 ranking: descending absolute SHAP value, preserving signed SHAP columns\n")
+    lines.append(
+        "- Tie convention in the Python evaluator: smaller group ID comes first when absolute values are equal. "
+        "The Stage 3.4 circuit verifies non-increasing order and dominance; it does not enforce this secondary "
+        "tie-break inside the circuit.\n"
+    )
     lines.append("- Engineering baseline: grouped `sum_i |w_i * x_i|`, matching the current Stage 2/3 attribution family\n\n")
 
     lines.append("## Group Summary\n\n")
@@ -340,8 +345,8 @@ def _write_exact_report(
         "Stage 3 remains SNARK-only. Stages 3.1-3.3 prove Logistic Regression inference and the older "
         "grouped linear attribution proxy. Stage 3.4 verifies the semantic-group Exact SHAP top-3 relation "
         "for the public Logistic Regression model by using the closed-form LR specialization above. This "
-        "is not confidential-model support, not arbitrary-model SHAP verification, and not sumcheck/GKR or "
-        "Partition SHAP.\n"
+        "is not model-agnostic verification, not confidential-model support, not arbitrary-model SHAP verification, "
+        "not differential privacy, and not sumcheck/GKR or Partition SHAP.\n"
     )
 
     _ensure_parent(out_md)
@@ -407,9 +412,10 @@ def _write_method_report(*, out_md: Path, created_utc: str) -> None:
     lines.append("6. The circuit keeps phi_g(x) private and publishes only y_hat plus top-k group IDs.\n")
     lines.append("```\n\n")
     lines.append(
-        "This circuit is model-specific to Logistic Regression. No sumcheck protocol, GKR verifier, "
-        "Partition SHAP implementation, confidential-model proof, or arbitrary-model Exact SHAP circuit "
-        "has been implemented or tested.\n"
+        "This circuit is model-specific to Logistic Regression. No model-agnostic verifier, sumcheck protocol, "
+        "GKR verifier, Partition SHAP implementation, confidential-model proof, arbitrary-model Exact SHAP circuit, "
+        "or differential privacy mechanism has been implemented or tested. Input-provenance binding is not part "
+        "of Stage 3.4; it is only explored in the optional Stage 3.5 input-commitment appendix prototype.\n"
     )
 
     _ensure_parent(out_md)

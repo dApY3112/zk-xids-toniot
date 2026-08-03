@@ -3,7 +3,7 @@
 
 **Date**: January 7, 2026  
 **Updated Feature Count**: **104 features** (upgraded from 87)  
-**ZK Stack**: Circom 2.1.9, Groth16, snarkjs 0.7.5  
+**ZK Stack**: Circom 2.x, Groth16, snarkjs 0.7.5
 
 ---
 
@@ -101,7 +101,7 @@ The Stage 3.1-3.3 test vectors cover representative TP, TN, and FN samples. The 
 - **Purpose**: verify that public top-3 semantic group IDs are authentic for the original grouped attribution proxy.
 - **Current harness performance**: prove steps around `1.27-1.47s` and verify steps around `0.53-0.61s` in `LATEST_REPRO_REPORT.md`.
 - **Security claim**: resistance to simple explanation manipulation attacks, such as claiming incorrect top-3 groups.
-- **Output**: public top-3 group IDs; raw features and exact group values remain private.
+- **Output**: public top-3 group IDs; processed input feature values and exact group values remain private.
 
 ---
 
@@ -133,7 +133,7 @@ The Stage 3 proof pattern is an applied cryptography mechanism for verifiable se
 1. Encode signed integer inputs and model parameters using shifted representations.
 2. Prove the public prediction is computed from private input features and an approved public model.
 3. Aggregate feature-level quantities into fixed semantic groups.
-4. Verify a public top-k semantic explanation without revealing raw features.
+4. Verify a public top-k semantic explanation without revealing processed input feature values.
 
 The IDS-specific components are the TON_IoT dataset, the five IDS semantic group names, and the security-monitoring evaluation setting. The reusable pattern applies to compatible public linear/logistic tabular models with fixed semantic groups and a fixed reference or attribution rule.
 
@@ -143,7 +143,7 @@ The IDS-specific components are the TON_IoT dataset, the five IDS semantic group
 
 ### Threat Model Coverage
 
-- **Input-feature privacy**: the verifier does not see raw processed features.
+- **Input-feature privacy**: the verifier does not see processed feature values.
 - **Prediction authenticity**: the proof binds the public prediction to the private input and public model.
 - **Explanation authenticity**: the proof binds the public top-3 semantic groups to the same private input.
 - **Intentional output disclosure**: the verifier learns `y_hat` and top-3 group IDs.
@@ -152,7 +152,7 @@ The IDS-specific components are the TON_IoT dataset, the five IDS semantic group
 
 - The model is public in the implemented system.
 - Hidden-model support is outside the selected public-model/private-input threat model.
-- Input commitments are optional future work for provenance or cross-proof consistency, not a requirement for input privacy.
+- Input commitments are not a requirement for input privacy. The optional Stage 3.5 appendix prototype demonstrates a commitment check for provenance or cross-proof consistency, but a real deployment still needs a trusted ingestion registry.
 - Stage 3.1-3.3 verify the original grouped attribution proxy.
 - Stage 3.4, documented separately, verifies semantic-group Exact SHAP for public Logistic Regression with fixed reference masking.
 - The implementation is validated only in the IDS case study.
@@ -163,7 +163,7 @@ The IDS-specific components are the TON_IoT dataset, the five IDS semantic group
 
 | Aspect | Stage 3.1 | Stage 3.2 | Stage 3.3 | Interpretation |
 |---|---|---|---|---|
-| Privacy | Input hidden | Input hidden | Input hidden | No raw feature disclosure |
+| Privacy | Feature values hidden | Feature values hidden | Feature values hidden | Intentional disclosure of public outputs only |
 | Explanation | None | Semantic groups | Verified top-3 groups | Progressive explanation authenticity |
 | Proving time | ~1.0s | ~1.3-1.5s | ~1.3-1.5s | Additional explanation logic increases cost |
 | Verification | ~0.64-0.73s | ~0.51-0.53s | ~0.53-0.61s | Same local CLI timing protocol |
@@ -205,10 +205,10 @@ Production deployment would require additional engineering:
 
 The thesis-facing contribution should be framed as:
 
-- **C1**. A public-model/private-input framework for verifiable semantic explanations, instantiated on intrusion detection.
+- **C1**. A public-model/private-input proof pattern for verifiable semantic explanations over public linear/logistic tabular models, instantiated on intrusion detection.
 - **C2**. A semantic-group explanation abstraction that maps high-dimensional tabular features into human-readable groups.
 - **C3**. A SNARK-verifiable semantic-group Exact SHAP top-3 method for public Logistic Regression with fixed reference masking, implemented in Stage 3.4.
-- **C4**. A reproducible case-study evaluation covering IDS performance, explanation stability, proxy-vs-ExactSHAP comparison, proof cost, output leakage, reference sensitivity, model-version binding, and negative tests.
+- **C4**. A reproducible case-study evaluation covering IDS performance, explanation stability, proxy-vs-ExactSHAP comparison, proof cost, output leakage, reference sensitivity, model-version binding, negative tests, and an appendix-only input-commitment feasibility prototype.
 
 For the original Stage 3.1-3.3 system, the key contribution is the proof pattern for private-input inference and verifiable semantic top-k explanations. Stage 3.4 upgrades the explanation target to semantic-group Exact SHAP.
 
@@ -240,6 +240,8 @@ Use stage3_zk/reports/zk_stage34_scaling_benchmark.md for:
 
 ## Final Position
 
-This repository should be read as a research prototype for a verifiable semantic explanation framework under private inputs, instantiated in a TON_IoT intrusion detection case study. The implementation demonstrates input-feature privacy, prediction authenticity, and explanation authenticity for the selected public-model/private-input setting. It does not claim production readiness, hidden-model support, model-agnostic SHAP verification, Partition SHAP, sumcheck/GKR, or XGBoost-in-ZK.
+This repository should be read as a research prototype for a scoped public-model/private-input proof pattern for verifiable semantic explanations, instantiated in a TON_IoT intrusion detection case study. The implementation demonstrates input-feature privacy, prediction authenticity, and explanation authenticity for the selected public Logistic Regression setting. It does not claim production readiness, model-agnostic verification, hidden-model support, confidential-model proofs, differential privacy, full input-provenance binding, Partition SHAP, sumcheck/GKR, or XGBoost-in-ZK.
+
+Appendix note: Stage 3.5 adds an experimental input-commitment circuit and tamper test. It should be cited as feasibility evidence for a provenance binding point, not as a complete deployed provenance system.
 
 *Generated on January 7, 2026. Final timing claims should cite `LATEST_REPRO_REPORT.md`, `zk_scaling_benchmark.md`, and `zk_stage34_scaling_benchmark.md`.*

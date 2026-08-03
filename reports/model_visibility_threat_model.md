@@ -8,12 +8,12 @@ This note clarifies what is private in the current ZK-XIDS implementation and ho
 
 ## Current Implemented Setting
 
-The implemented Stage 3 pipeline uses a public-model, private-input setting.
+The implemented Stage 3 pipeline uses a public-model, private-input setting for an approved public Logistic Regression model.
 
 | Item | Current status | Reason |
 |---|---|---|
 | Logistic Regression weights and bias | Public / fixed / auditable | The verifier can independently know which approved public model is being proved. |
-| Processed network-flow input `x` | Private witness | Raw or processed traffic features are not revealed in public proof signals. |
+| Processed network-flow input `x` | Private witness | Processed feature values are not revealed in public proof signals. |
 | Prediction `y_hat` | Public output | The verifier learns the IDS decision being certified. |
 | Stage 3.4 Exact SHAP top-3 IDs | Public output | The verifier learns the semantic explanation summary. |
 | Exact SHAP values `phi_g` | Private intermediate | The circuit uses them for ranking but does not publish all group magnitudes. |
@@ -27,11 +27,21 @@ The prover supplies `x_shifted[104]` as private witness values to the Groth16 ci
 
 This is the correct answer if asked: "the input is hidden as private witness data inside the SNARK; the verifier sees only the proof and the declared public outputs."
 
+The formal privacy statement should be phrased as zero-knowledge with an explicit leakage function. In the implemented Stage 3.4 setting, the intended leakage is:
+
+```text
+L(x) = (approved public model/version metadata, y_hat, top3_ids)
+```
+
+plus proof-system metadata such as the verification key identity and the fact that verification accepted. The proof does not reveal processed input feature values or the full vector of Exact SHAP magnitudes.
+
+This is not a differential-privacy claim because no calibrated noise is added to the prediction or explanation outputs. The output-leakage audit is an empirical analysis of the disclosed values, not a cryptographic privacy proof and not a distribution-free mutual-information bound.
+
 ## Input Privacy vs Input Provenance
 
 The current proof hides the processed feature vector during verification, but it does not by itself bind the hidden witness to a specific external record. A Stage 3.4 proof shows that there exists some private `x_shifted[104]` satisfying the approved model, prediction, and top-3 Exact SHAP relation. If an auditor also needs to know that this was the same input as a particular SIEM event, log row, or previously registered data record, the deployment needs an additional provenance mechanism.
 
-One natural extension is an input commitment recorded at data ingestion time, for example `C_x = Hash(x_shifted, metadata, salt)`, with the circuit later checking that the private witness opens to the public commitment. This would provide audit binding or cross-proof consistency while keeping the feature values hidden. It is not required for input-feature privacy and is not implemented in the current Stage 3.4 circuit.
+One natural extension is an input commitment recorded at data ingestion time, for example `C_x = Hash(x_shifted, metadata, salt)`, with the circuit later checking that the private witness opens to the public commitment. This would provide audit binding or cross-proof consistency while keeping the feature values hidden. It is not required for input-feature privacy and is not implemented in the Stage 3.4 circuit. The repository includes an appendix-only Stage 3.5 prototype of this mechanism, but a real provenance claim still requires a trusted ingestion-time commitment registry.
 
 ## Why Public Model Is Still a Defensible Thesis Scope
 
@@ -44,7 +54,7 @@ Public model does not mean weak privacy. It means the thesis studies a different
 
 This scope is narrower than confidential ML-as-a-service, but it is not empty. The implemented contribution is verified semantic explainability for IDS under private inputs, upgraded in Stage 3.4 from an engineering attribution proxy to semantic-group Exact SHAP.
 
-The public-model/private-input setting is broader than IDS. IDS/SOC is a natural case study because auditability is intuitive: the verifier may need to know which detector is approved while the tenant or client keeps traffic features private. The same visibility logic applies to any approved public model with private tabular inputs, such as healthcare risk scores, credit-risk models, IoT monitoring models, or academic benchmark classifiers. Model binding by public artifact hash is sufficient only because the model is public; it verifies model identity but does not hide the model.
+The public-model/private-input setting is broader than IDS when the target is an approved public linear/logistic tabular model with fixed semantic groups and a fixed reference vector. IDS/SOC is a natural case study because auditability is intuitive: the verifier may need to know which detector is approved while the tenant or client keeps traffic features private. Similar visibility logic could apply to compatible public healthcare risk scores, credit-risk models, IoT monitoring models, or academic benchmark classifiers after replacing the artifacts and evaluation protocol. Model binding by public artifact hash is sufficient only because the model is public; it verifies model identity but does not hide the model.
 
 ## What Hidden-Model Support Would Add
 

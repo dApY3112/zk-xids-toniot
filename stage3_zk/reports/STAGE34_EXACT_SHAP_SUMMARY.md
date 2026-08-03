@@ -4,7 +4,7 @@ Generated: 2026-05-22
 
 ## Scope
 
-Stage 3.4 is a new, non-destructive extension of the existing ZK-XIDS Stage 3 pipeline. It targets SNARK verification of semantic-group Exact SHAP for the public Logistic Regression IDS model under the existing private-input setting.
+Stage 3.4 is a non-destructive extension of the existing ZK-XIDS Stage 3 pipeline. It targets SNARK verification of semantic-group Exact SHAP for the approved public Logistic Regression IDS model under the existing private-input setting. It is not a model-agnostic verifier and does not implement confidential-model support or differential privacy. Stage 3.4 does not implement input-provenance binding; that binding point is explored separately in the optional Stage 3.5 appendix prototype.
 
 Current implementation status:
 
@@ -13,11 +13,12 @@ Current implementation status:
 - Compile helper added: `stage3_zk/scripts/stage 3.4/02_compile_circuit_stage34.ps1`
 - Witness smoke helper added: `stage3_zk/scripts/stage 3.4/03_witness_smoke_stage34.py`
 - Negative witness-test helper added: `stage3_zk/scripts/stage 3.4/test_stage34_negative.py`
-- Prepared inputs generated for samples 1, 2, and 3 under `stage3_zk/circuits/exact_shap_top3/build/`
+- Prepared inputs generated for samples 1-8 under `stage3_zk/circuits/exact_shap_top3/build/`
 - Circuit compile artifacts generated: `exact_shap_top3.r1cs`, `exact_shap_top3.sym`, and `exact_shap_top3_js/`
-- Witness generation passed for samples 1, 2, and 3.
-- Negative witness tests passed for sample 1.
-- Groth16 setup, proof generation, and verification passed for samples 1, 2, and 3.
+- Witness generation passed for samples 1-8.
+- Negative witness tests passed for samples 1-8.
+- Groth16 setup, proof generation, and verification passed for samples 1-8.
+- Diverse test-vector report: `stage3_zk/reports/STAGE34_DIVERSE_TEST_VECTORS.md`
 - Proof evidence report: `stage3_zk/reports/STAGE34_PROOF_REPORT.md`
 
 ## Mathematical Target
@@ -60,7 +61,7 @@ Private:
 - `x_shifted[104]`
 - `other2_ids[2]`
 
-The circuit does not publicly reveal raw input features or all `phi_g` values. It reveals only the prediction and claimed top-3 semantic group IDs.
+The circuit does not publicly reveal processed input feature values or all `phi_g` values. It reveals only the prediction and claimed top-3 semantic group IDs.
 
 ## Circuit Checks
 
@@ -79,27 +80,37 @@ The Stage 3.4 circuit checks:
 
 ## Prepared Sample Results
 
-Stage 3.4 input generation succeeded for the existing ZK test vectors:
+Stage 3.4 input generation succeeded for the original ZK test vectors and the expanded diverse vector set:
 
 | Sample | Label | y_hat | Top-3 Exact SHAP groups |
 |---:|---|---:|---|
 | 1 | TP_attack | 1 | Application, ConnectionState, Protocol |
 | 2 | TN_normal | 0 | ConnectionState, Protocol, TrafficVolume |
 | 3 | FN_attack | 0 | Protocol, Application, ConnectionState |
+| 4 | FP_normal | 1 | TrafficVolume, Protocol, ConnectionState |
+| 5 | HighConf_attack | 1 | TrafficVolume, ConnectionState, Protocol |
+| 6 | HighConf_normal | 0 | TrafficVolume, ConnectionState, Application |
+| 7 | Borderline_score | 0 | Application, TrafficVolume, ConnectionState |
+| 8 | SmallTop3Margin | 1 | ConnectionState, Protocol, Ports |
 
 These rankings are based on `abs(phi_g_int)`, not the old Stage 3.3 `sum_i |w_i*x_i|` grouped attribution.
 
 ## Witness Test Status
 
-Stage 3.4 witness generation has passed for all three existing ZK test vectors:
+Stage 3.4 witness generation has passed for all eight current ZK test vectors:
 
 ```text
 PASS: Stage 3.4 witness generated: witness_sample_1.wtns
 PASS: Stage 3.4 witness generated: witness_sample_2.wtns
 PASS: Stage 3.4 witness generated: witness_sample_3.wtns
+PASS: Stage 3.4 witness generated: witness_sample_4.wtns
+PASS: Stage 3.4 witness generated: witness_sample_5.wtns
+PASS: Stage 3.4 witness generated: witness_sample_6.wtns
+PASS: Stage 3.4 witness generated: witness_sample_7.wtns
+PASS: Stage 3.4 witness generated: witness_sample_8.wtns
 ```
 
-Negative witness tests also passed for sample 1:
+Negative witness tests also passed for samples 1-8:
 
 ```text
 PASS: negative case rejected as expected: wrong_y_hat
@@ -114,13 +125,18 @@ This means the Stage 3.4 circuit relation is satisfiable for valid inputs and re
 
 ## Proof Verification Status
 
-Groth16 proof generation and verification passed for all three existing ZK test vectors:
+Groth16 proof generation and verification passed for all eight current ZK test vectors:
 
 | Sample | Witness ms | Prove ms | Verify ms | Proof bytes | Public bytes | Status |
 |---:|---:|---:|---:|---:|---:|---|
-| 1 | 80 | 1090 | 672 | 802 | 1178 | PASS |
-| 2 | 63 | 1083 | 605 | 806 | 1178 | PASS |
-| 3 | 61 | 1006 | 605 | 803 | 1178 | PASS |
+| 1 | 64 | 1280 | 711 | 805 | 1178 | PASS |
+| 2 | 58 | 1248 | 817 | 800 | 1178 | PASS |
+| 3 | 63 | 1009 | 630 | 806 | 1178 | PASS |
+| 4 | 65 | 1365 | 915 | 807 | 1178 | PASS |
+| 5 | 72 | 1102 | 618 | 802 | 1178 | PASS |
+| 6 | 60 | 1085 | 618 | 806 | 1178 | PASS |
+| 7 | 59 | 1029 | 639 | 805 | 1178 | PASS |
+| 8 | 61 | 1033 | 657 | 805 | 1178 | PASS |
 
 Circuit and artifact metrics:
 
@@ -133,24 +149,27 @@ Circuit and artifact metrics:
 | R1CS bytes | 1283048 |
 | WASM bytes | 99582 |
 | ZKey bytes | 4573072 |
-| Verification key bytes | 22671 |
+| Verification key bytes | 22669 |
 | Public signals | 109 |
 
 ## Claims and Non-Claims
 
 Current correct claim:
 
-> Stage 3.4 implements and verifies a SNARK relation for semantic-group Exact SHAP specialized to public Logistic Regression. Valid witnesses, Groth16 proof generation, and proof verification pass for the three existing ZK test vectors, and malformed explanation/prediction/group-ID inputs are rejected at witness-generation time.
+> Stage 3.4 implements and verifies a SNARK relation for semantic-group Exact SHAP specialized to public Logistic Regression. Valid witnesses, Groth16 proof generation, and proof verification pass for the eight current ZK test vectors, and malformed explanation/prediction/group-ID inputs are rejected at witness-generation time.
 
-Do not claim yet:
+Do not claim:
 
+- model-agnostic verification.
 - Sumcheck/GKR support.
 - Partition SHAP support.
 - confidential-model support.
 - model-agnostic Exact SHAP verification for arbitrary models.
+- differential privacy.
+- full input-provenance binding to a specific SIEM event or log row; Stage 3.5 is only an appendix prototype of the commitment check.
 
 Reproducibility command:
 
 ```powershell
-python tools/reproduce.py zk-stage34 --samples 1,2,3
+python tools/reproduce.py zk-stage34 --samples 1,2,3,4,5,6,7,8
 ```

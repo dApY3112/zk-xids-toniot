@@ -24,6 +24,7 @@ Here `v_x(S)` is the Logistic Regression score/logit after keeping groups in `S`
 - Output CSV: `outputs/explainability/exact_shap_semantic_groups.csv`
 - SHAP players: five semantic groups
 - Exact SHAP top-3 ranking: descending absolute SHAP value, preserving signed SHAP columns
+- Tie convention in the Python evaluator: smaller group ID comes first when absolute values are equal. The Stage 3.4 circuit verifies non-increasing order and dominance; it does not enforce this secondary tie-break inside the circuit.
 - Engineering baseline: grouped `sum_i |w_i * x_i|`, matching the current Stage 2/3 attribution family
 
 ## Group Summary
@@ -71,4 +72,4 @@ Because there are only five semantic groups, exact enumeration is feasible: each
 
 ## ZK Status
 
-Stage 3 remains SNARK-only. Stages 3.1-3.3 prove Logistic Regression inference and the older grouped linear attribution proxy. Stage 3.4 verifies the semantic-group Exact SHAP top-3 relation for the public Logistic Regression model by using the closed-form LR specialization above. This is not confidential-model support, not arbitrary-model SHAP verification, and not sumcheck/GKR or Partition SHAP.
+Stage 3 remains SNARK-only. Stages 3.1-3.3 prove Logistic Regression inference and the older grouped linear attribution proxy. Stage 3.4 verifies the semantic-group Exact SHAP top-3 relation for the public Logistic Regression model by using the closed-form LR specialization above. This is not model-agnostic verification, not confidential-model support, not arbitrary-model SHAP verification, not differential privacy, and not sumcheck/GKR or Partition SHAP.

@@ -3,23 +3,25 @@
 
 **Date**: January 7, 2026  
 **Author**: Master's Thesis Research  
-**ZK Stack**: Circom 2.1.9, Groth16, snarkjs 0.7.5  
+**ZK Stack**: Circom 2.x, Groth16, snarkjs 0.7.5
 **Feature Count**: **104** (upgraded from 87)
 
 **Reproducible measurements** (timings, constraints, proof/public sizes) are captured by the harness evidence report:
 - `stage3_zk/reports/LATEST_REPRO_REPORT.md`
 
+**Scope note:** This is a historical Stage 3.1-3.3 report for the original grouped-attribution prototype. Final thesis claims should be scoped to the public-model/private-input setting and should cite the Stage 3.4 Exact SHAP reports for the final explanation target. The current main claim does not include model-agnostic verification, confidential-model support, differential privacy, or full input provenance binding. Stage 3.5 only provides appendix evidence for a circuit-side input commitment check.
+
 ---
 
 ## Executive Summary
 
-This report presents a complete Zero-Knowledge (ZK) proof system for privacy-preserving Intrusion Detection Systems (IDS), implemented in three progressive stages:
+This report presents the original Stage 3.1-3.3 Zero-Knowledge (ZK) proof prototype for privacy-preserving Intrusion Detection Systems (IDS), implemented in three progressive stages:
 
 1. **Stage 3.1**: Inference-only circuit (baseline)
 2. **Stage 3.2**: Semantic group explanation circuit
 3. **Stage 3.3**: Top-3 verifiable explanation circuit
 
-**Key Achievement**: Demonstrated verifiable predictions and verifiable top-3 semantic explanations while preserving input privacy. For authoritative, reproducible performance/complexity numbers, refer to `LATEST_REPRO_REPORT.md`.
+**Key Achievement**: Demonstrated verifiable predictions and verifiable top-3 semantic explanations under input-feature privacy with intentional output disclosure. For authoritative, reproducible performance/complexity numbers, refer to `LATEST_REPRO_REPORT.md`.
 
 ---
 
@@ -35,9 +37,9 @@ This report presents a complete Zero-Knowledge (ZK) proof system for privacy-pre
   - Exploit circuit vulnerabilities (constraint solver edge cases)
 
 **Security Goals**:
-- ✅ **Correctness**: Proof passes ⟺ prediction computed correctly from encrypted input
-- ✅ **Privacy**: Verifier learns nothing about input beyond prediction and explanation
-- ✅ **Non-malleability**: Prover cannot generate valid proof for incorrect computation
+- **Correctness**: Proof passes only when the prediction is computed correctly from the private witness.
+- **Input-feature privacy**: Under the zero-knowledge property, the verifier learns no processed feature values beyond intentional public outputs.
+- **Explanation authenticity**: Prover cannot generate a valid proof for an incorrect prediction or claimed top-3 relation without satisfying the circuit.
 
 ### 1.2 Model Specification
 
@@ -446,10 +448,10 @@ Thesis Defense Narrative:
 
 Quantitative Justification:
 
-Alternative 1 (No ZK): Proving = 0ms, but privacy lost (client must reveal raw traffic)
+Alternative 1 (No ZK): Proving = 0ms, but input-feature privacy is lost if the client must reveal processed traffic features.
 Alternative 2 (Stage 3.1 only): proves inference, but no explainability (SOC cannot investigate)
 Alternative 3 (Unverified explanation): computes groups, but adversary can mislead (fake top-3)
-Our Solution (Stage 3.3): full trust + privacy + verifiable explanation authenticity
+Our Solution (Stage 3.3): input-feature privacy + prediction authenticity + verifiable explanation authenticity
 Cost-benefit: extra constraints buy cryptographic proof that the explanation matches the model computation
 
 ### 5.3 Trust vs Speed Design Philosophy
@@ -472,7 +474,7 @@ Decision: KEPT for generalizability
 Rationale: Conservative bitwidth future-proofs for model retraining with larger weights
 Total potential speedup: ~135ms (20% improvement)
 
-Thesis Position: "We prioritize formal correctness over performance optimization. The incremental 135ms cost ensures defense against potential constraint solver exploits and maintains generalizability across different model parameters."
+Thesis Position: "We prioritize formal correctness over performance optimization. The incremental 135ms cost ensures defense against potential constraint solver exploits and keeps the circuit robust within the selected public Logistic Regression artifact family."
 
 ## 6. Implementation Details
 ### 6.1 Constraint Optimization Techniques
@@ -515,7 +517,7 @@ Critical Insight: All range checks must be performed on shifted values before re
 ### 6.2 Build Pipeline
 Toolchain:
 
-Circom 2.1.9: Circuit compiler (WSL /usr/local/bin/circom)
+Circom 2.x: Circuit compiler (WSL `circom` on PATH)
 Powers of Tau: ptau 15 (~36MB, supports up to 2^15 = 32K constraints)
 snarkjs 0.7.5: Groth16 prover/verifier (Windows Node.js)
 Workflow:
@@ -704,23 +706,23 @@ Recommendation: For thesis, document that production deployment requires MPC; cu
 ### 9.1 Novel Aspects
 Shifted-Input Encoding for Signed Arithmetic
 
-First application of shift-based sign encoding for ML inference circuits
-Generalizable to any quantized neural network with bounded weights
+Implemented shifted-input encoding for signed fixed-point arithmetic in the LR inference circuits.
+The idea may be reusable in other bounded fixed-point circuits, but the implemented thesis claim is limited to the public Logistic Regression IDS model and compatible public linear/logistic tabular models.
 Semantic Group Privacy
 
-Novel design: Compute group contributions as private signals, use only for internal verification
-Prior work (e.g., zkML) exposes all intermediate values publicly
+System design: compute group contributions as private signals and use them only for internal verification.
+This avoids publishing group magnitudes; the public leakage is limited to the prediction and top-3 group IDs.
 Verifiable Top-K Explanation
 
-First ZK circuit for cryptographic proof of feature importance ranking
-Defense against explanation manipulation attacks (new threat model)
+A ZK circuit for cryptographic proof of semantic-group top-k explanation authenticity.
+Defense against explanation manipulation attacks in the selected public-model/private-input IDS setting.
 ### 9.2 Comparison with Related Work
 
 | Work | ZK System | Explainability | Input Privacy | Explanation Authenticity |
 |------|-----------|----------------|---------------|-------------------------|
 | zkCNN (EZKL) | Halo2 | ❌ No | ✅ Yes | N/A |
 | ZKCSP | Groth16 | ✅ Feature-level | ⚠️ Partial | ❌ Unverified |
-| **Ours (Stage 3.3)** | **Groth16** | **✅ Top-3 groups** | **✅ Full** | **✅ Cryptographic proof** |
+| **Ours (Stage 3.3)** | **Groth16** | **Top-3 groups** | **Input-feature privacy with public outputs** | **Cryptographic proof** |
 ### 9.3 Limitations & Future Work
 
 **Limitations**:
@@ -742,7 +744,7 @@ Key Results:
 ✅ Reproducible Stage 3.3 proving evidence: p50 prove about 1.48s in current CLI harness
 ✅ Reproducible Stage 3.3 verification evidence: p50 verify about 0.56s in current CLI harness
 ✅ Cryptographic explanation authenticity: Adversary cannot forge fake top-3
-✅ Full input privacy: Verifier learns only prediction and top-3 group IDs
+Input-feature privacy up to intentional output disclosure: verifier learns the prediction and top-3 group IDs, but not the processed feature vector or private group magnitudes.
 Thesis Position: "The additional overhead over inference-only ZK is an acceptable cost for verifiable explainability in security-critical domains. We prioritize trust over speed, employing defense-in-depth constraint design to ensure formal correctness."
 stage3_zk/
 ├── circuits/

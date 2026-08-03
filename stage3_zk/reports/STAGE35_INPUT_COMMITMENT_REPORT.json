@@ -1,0 +1,337 @@
+{
+  "created_utc": "2026-05-28T12:17:38+00:00",
+  "started_utc": "2026-05-28T12:17:20+00:00",
+  "samples": [
+    1,
+    7,
+    8
+  ],
+  "setup_steps": [
+    {
+      "step": "setup",
+      "status": "SKIP",
+      "duration_ms": 0,
+      "reason": "existing final zkey and verification key"
+    }
+  ],
+  "prepare_steps": [
+    {
+      "cmd": [
+        "C:\\Anaconda\\python.exe",
+        "C:\\Paper\\Masters thesis\\stage3_zk\\scripts\\stage 3.5\\01_prepare_input_stage35.py",
+        "1"
+      ],
+      "returncode": 0,
+      "duration_ms": 258,
+      "stdout": "OK: Prepared Stage 3.5 input: C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\input_sample_1.json\n   metadata_hash: 2227415802052659949245220342783614286223930440596548031618336974868838952574\n   private salt: 17038068162254906268079158196398048344269001357640797162164299978579664501623\n",
+      "stderr": "",
+      "step": "prepare_input_sample_1",
+      "status": "PASS"
+    },
+    {
+      "cmd": [
+        "C:\\Anaconda\\python.exe",
+        "C:\\Paper\\Masters thesis\\stage3_zk\\scripts\\stage 3.5\\01_prepare_input_stage35.py",
+        "7"
+      ],
+      "returncode": 0,
+      "duration_ms": 214,
+      "stdout": "OK: Prepared Stage 3.5 input: C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\input_sample_7.json\n   metadata_hash: 14178437548618833690531217983959277294872225951229203167241637450111458921877\n   private salt: 1535171223766208152090648053001999753449757002823860837910983503069447011921\n",
+      "stderr": "",
+      "step": "prepare_input_sample_7",
+      "status": "PASS"
+    },
+    {
+      "cmd": [
+        "C:\\Anaconda\\python.exe",
+        "C:\\Paper\\Masters thesis\\stage3_zk\\scripts\\stage 3.5\\01_prepare_input_stage35.py",
+        "8"
+      ],
+      "returncode": 0,
+      "duration_ms": 183,
+      "stdout": "OK: Prepared Stage 3.5 input: C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\input_sample_8.json\n   metadata_hash: 16889248000829076525228458603822604585718979498219729450450566352588453558634\n   private salt: 24381927910085588441694696558155014141150942053260158305077787998686329268\n",
+      "stderr": "",
+      "step": "prepare_input_sample_8",
+      "status": "PASS"
+    }
+  ],
+  "circuit_stats": {
+    "wires": 24816,
+    "constraints": 25094,
+    "private_inputs": 107,
+    "public_inputs": 110,
+    "labels": 39097,
+    "outputs": 1,
+    "curve": "bn-128"
+  },
+  "stage34_baseline": {
+    "constraints": 8358,
+    "wires": 8078,
+    "public_inputs": 109,
+    "private_inputs": 106,
+    "outputs": 0,
+    "mean_witness_ms": 62.8,
+    "mean_prove_ms": 1143.9,
+    "mean_verify_ms": 700.6
+  },
+  "artifact_sizes": {
+    "r1cs_bytes": 4236604,
+    "wasm_bytes": 4174756,
+    "zkey_bytes": 11408750,
+    "vkey_bytes": 23052
+  },
+  "sample_results": [
+    {
+      "sample": 1,
+      "steps": [
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\exact_shap_top3_commitment_js\\generate_witness.js",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\exact_shap_top3_commitment_js\\exact_shap_top3_commitment.wasm",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\input_sample_1.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\witness_sample_1.wtns"
+          ],
+          "returncode": 0,
+          "duration_ms": 541,
+          "stdout": "",
+          "stderr": "",
+          "step": "witness_sample_1",
+          "status": "PASS"
+        },
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\node_modules\\snarkjs\\cli.js",
+            "groth16",
+            "prove",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\exact_shap_top3_commitment_final.zkey",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\witness_sample_1.wtns",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\stage35\\proof_stage35_sample_1.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\stage35\\public_stage35_sample_1.json"
+          ],
+          "returncode": 0,
+          "duration_ms": 2217,
+          "stdout": "",
+          "stderr": "",
+          "step": "prove_sample_1",
+          "status": "PASS"
+        },
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\node_modules\\snarkjs\\cli.js",
+            "groth16",
+            "verify",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\verification_key.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\stage35\\public_stage35_sample_1.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\stage35\\proof_stage35_sample_1.json"
+          ],
+          "returncode": 0,
+          "duration_ms": 690,
+          "stdout": "\u001b[32;22m[INFO]  \u001b[39;1msnarkJS\u001b[0m: OK!\n",
+          "stderr": "",
+          "step": "verify_sample_1",
+          "status": "PASS"
+        },
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\node_modules\\snarkjs\\cli.js",
+            "groth16",
+            "verify",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\verification_key.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\stage35\\public_stage35_sample_1_tampered_commitment.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\stage35\\proof_stage35_sample_1.json"
+          ],
+          "returncode": 1,
+          "duration_ms": 642,
+          "stdout": "\u001b[31;22m[ERROR] \u001b[39;1msnarkJS\u001b[0m: Invalid proof\n",
+          "stderr": "",
+          "step": "verify_tampered_commitment_sample_1",
+          "status": "PASS",
+          "expected_result": "verification_failure",
+          "tampered_public": "outputs\\proofs\\stage35\\public_stage35_sample_1_tampered_commitment.json"
+        }
+      ],
+      "artifacts": {
+        "witness": "circuits\\exact_shap_top3_commitment\\build\\witness_sample_1.wtns",
+        "witness_bytes": 794188,
+        "proof": "outputs\\proofs\\stage35\\proof_stage35_sample_1.json",
+        "proof_bytes": 806,
+        "public": "outputs\\proofs\\stage35\\public_stage35_sample_1.json",
+        "public_bytes": 1341,
+        "public_signal_count": 111,
+        "input_commitment_public_signal_0": "19799138317665512903217523168127531715097673960202322514719790718575995586493"
+      }
+    },
+    {
+      "sample": 7,
+      "steps": [
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\exact_shap_top3_commitment_js\\generate_witness.js",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\exact_shap_top3_commitment_js\\exact_shap_top3_commitment.wasm",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\input_sample_7.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\witness_sample_7.wtns"
+          ],
+          "returncode": 0,
+          "duration_ms": 399,
+          "stdout": "",
+          "stderr": "",
+          "step": "witness_sample_7",
+          "status": "PASS"
+        },
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\node_modules\\snarkjs\\cli.js",
+            "groth16",
+            "prove",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\exact_shap_top3_commitment_final.zkey",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\witness_sample_7.wtns",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\stage35\\proof_stage35_sample_7.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\stage35\\public_stage35_sample_7.json"
+          ],
+          "returncode": 0,
+          "duration_ms": 2972,
+          "stdout": "",
+          "stderr": "",
+          "step": "prove_sample_7",
+          "status": "PASS"
+        },
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\node_modules\\snarkjs\\cli.js",
+            "groth16",
+            "verify",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\verification_key.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\stage35\\public_stage35_sample_7.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\stage35\\proof_stage35_sample_7.json"
+          ],
+          "returncode": 0,
+          "duration_ms": 1647,
+          "stdout": "\u001b[32;22m[INFO]  \u001b[39;1msnarkJS\u001b[0m: OK!\n",
+          "stderr": "",
+          "step": "verify_sample_7",
+          "status": "PASS"
+        },
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\node_modules\\snarkjs\\cli.js",
+            "groth16",
+            "verify",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\verification_key.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\stage35\\public_stage35_sample_7_tampered_commitment.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\stage35\\proof_stage35_sample_7.json"
+          ],
+          "returncode": 1,
+          "duration_ms": 998,
+          "stdout": "\u001b[31;22m[ERROR] \u001b[39;1msnarkJS\u001b[0m: Invalid proof\n",
+          "stderr": "",
+          "step": "verify_tampered_commitment_sample_7",
+          "status": "PASS",
+          "expected_result": "verification_failure",
+          "tampered_public": "outputs\\proofs\\stage35\\public_stage35_sample_7_tampered_commitment.json"
+        }
+      ],
+      "artifacts": {
+        "witness": "circuits\\exact_shap_top3_commitment\\build\\witness_sample_7.wtns",
+        "witness_bytes": 794188,
+        "proof": "outputs\\proofs\\stage35\\proof_stage35_sample_7.json",
+        "proof_bytes": 807,
+        "public": "outputs\\proofs\\stage35\\public_stage35_sample_7.json",
+        "public_bytes": 1341,
+        "public_signal_count": 111,
+        "input_commitment_public_signal_0": "1440005901333557717236637567270296791956203000080768837678483894433315356553"
+      }
+    },
+    {
+      "sample": 8,
+      "steps": [
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\exact_shap_top3_commitment_js\\generate_witness.js",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\exact_shap_top3_commitment_js\\exact_shap_top3_commitment.wasm",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\input_sample_8.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\witness_sample_8.wtns"
+          ],
+          "returncode": 0,
+          "duration_ms": 817,
+          "stdout": "",
+          "stderr": "",
+          "step": "witness_sample_8",
+          "status": "PASS"
+        },
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\node_modules\\snarkjs\\cli.js",
+            "groth16",
+            "prove",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\exact_shap_top3_commitment_final.zkey",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\witness_sample_8.wtns",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\stage35\\proof_stage35_sample_8.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\stage35\\public_stage35_sample_8.json"
+          ],
+          "returncode": 0,
+          "duration_ms": 3002,
+          "stdout": "",
+          "stderr": "",
+          "step": "prove_sample_8",
+          "status": "PASS"
+        },
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\node_modules\\snarkjs\\cli.js",
+            "groth16",
+            "verify",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\verification_key.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\stage35\\public_stage35_sample_8.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\stage35\\proof_stage35_sample_8.json"
+          ],
+          "returncode": 0,
+          "duration_ms": 786,
+          "stdout": "\u001b[32;22m[INFO]  \u001b[39;1msnarkJS\u001b[0m: OK!\n",
+          "stderr": "",
+          "step": "verify_sample_8",
+          "status": "PASS"
+        },
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\node_modules\\snarkjs\\cli.js",
+            "groth16",
+            "verify",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3_commitment\\build\\verification_key.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\stage35\\public_stage35_sample_8_tampered_commitment.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\stage35\\proof_stage35_sample_8.json"
+          ],
+          "returncode": 1,
+          "duration_ms": 740,
+          "stdout": "\u001b[31;22m[ERROR] \u001b[39;1msnarkJS\u001b[0m: Invalid proof\n",
+          "stderr": "",
+          "step": "verify_tampered_commitment_sample_8",
+          "status": "PASS",
+          "expected_result": "verification_failure",
+          "tampered_public": "outputs\\proofs\\stage35\\public_stage35_sample_8_tampered_commitment.json"
+        }
+      ],
+      "artifacts": {
+        "witness": "circuits\\exact_shap_top3_commitment\\build\\witness_sample_8.wtns",
+        "witness_bytes": 794188,
+        "proof": "outputs\\proofs\\stage35\\proof_stage35_sample_8.json",
+        "proof_bytes": 803,
+        "public": "outputs\\proofs\\stage35\\public_stage35_sample_8.json",
+        "public_bytes": 1342,
+        "public_signal_count": 111,
+        "input_commitment_public_signal_0": "10804036567290950545363759313108844641536148594911455349234038691264070414399"
+      }
+    }
+  ]
+}

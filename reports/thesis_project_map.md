@@ -3,7 +3,9 @@
 This document maps the repo into a thesis-friendly structure: **what each stage does**, **which notebooks/scripts implement it**, and **which artifacts are produced/consumed**.
 
 ## 0) One-paragraph system description (thesis-ready)
-This repository implements an intrusion detection case study of a broader zero-knowledge framework for verifiable semantic explanations under private inputs. The empirical instantiation uses the TON_IoT Network dataset, a public Logistic Regression IDS model, fixed semantic groups, and Circom/Groth16 proofs. Stage 3.4 verifies that the public prediction and ordered top-3 semantic-group Exact SHAP explanation are computed from the same private feature vector.
+This repository implements an intrusion detection case study of a scoped zero-knowledge proof pattern for verifiable semantic explanations under private inputs. The empirical instantiation uses the TON_IoT Network dataset, an approved public Logistic Regression IDS model, fixed semantic groups, and Circom/Groth16 proofs. Stage 3.4 verifies that the public prediction and a valid ordered non-increasing top-3 semantic-group Exact SHAP explanation are computed from the same private feature vector.
+
+Scope guardrail: the implemented main claim is public-model/private-input verification for public linear/logistic tabular models with fixed semantic groups and a fixed reference vector. It is not model-agnostic, does not hide model weights, and does not provide differential privacy. Stage 3.4 does not bind the witness to a specific log row by itself; Stage 3.5 is an optional appendix prototype for an input-commitment binding point.
 
 ---
 
@@ -15,7 +17,7 @@ This repository implements an intrusion detection case study of a broader zero-k
 - `notebooks/`: the end-to-end ML pipeline (01 -> 06).
 - `outputs/`: **all ML artifacts** produced by notebooks (splits, preprocessing, arrays, models, explainability metrics).
 - `reports/`: thesis-friendly markdown summaries for Stage 1-3.
-- `stage3_zk/`: complete ZK implementation: circuits, scripts, ZK artifacts, test vectors, proofs, benchmarks.
+- `stage3_zk/`: ZK implementation for the scoped public-model/private-input prototype: circuits, scripts, ZK artifacts, test vectors, proofs, benchmarks, and an optional Stage 3.5 input-commitment appendix prototype.
 
 ---
 
@@ -114,8 +116,16 @@ This repo includes a script-first evaluation suite that is designed to be defens
   - `reports/decision_engineering_baselines.md` + `reports/figures/decision_engineering_*`
 - Drift/robustness proxy (metric stability across ordered test chunks):
   - `reports/drift_chunks.md` + `reports/figures/drift_chunks_*`
+- File-wise holdout robustness check (train on earlier-numbered files, evaluate on held-out later files):
+  - `reports/filewise_holdout.md` + `outputs/reports/filewise_holdout.json`
+- Attack-type post-hoc error analysis (`type` used only after prediction):
+  - `reports/attack_type_error_analysis.md` + `outputs/reports/attack_type_error_analysis.csv`
 - Semantic-group ablation (raw vs size-normalized group frequency):
   - `reports/semantic_group_ablation.md` + `reports/figures/semantic_group_ablation_*`
+- Float-vs-quantized Logistic Regression agreement:
+  - `reports/float_vs_quantized_lr_agreement.md` + `outputs/reports/float_vs_quantized_lr_examples.csv`
+- Exact SHAP ranking margin:
+  - `reports/exact_shap_ranking_margin.md` + `outputs/reports/exact_shap_ranking_margin_examples.csv`
 - Cost-based threshold selection (explicit FN/FP ratios):
   - `reports/cost_based_thresholds.md` + `reports/figures/cost_thresholds_*`
 - ZK prove/verify scaling benchmark (p50/p95 across repeated runs):
@@ -186,6 +196,7 @@ This repo includes a script-first evaluation suite that is designed to be defens
 - Stage 3.2: `stage3_zk/circuits/semantic_groups/`
 - Stage 3.3: `stage3_zk/circuits/top3_explanation/`
 - Stage 3.4: `stage3_zk/circuits/exact_shap_top3/`
+- Stage 3.5 appendix: `stage3_zk/circuits/exact_shap_top3_commitment/`
 
 **Core design choice (thesis highlight)**
 - Use **shifted-input encoding** to represent signed integers robustly in field arithmetic:
@@ -197,7 +208,7 @@ Scripts are grouped by stage:
 - `stage3_zk/scripts/stage 3.1/`
   - `02_build_circuit.ps1`, `03_generate_proof.sh`, `04_verify_proof.sh`, `05_benchmark.py` (optional)
   - input prep: `01_prepare_input.py` converts `test_vectors/test_sample_k.json` to `circuits/.../build/input_sample_k.json`
-- `stage3_zk/scripts/stage 3.2/`, `stage3_zk/scripts/stage 3.3/`, and `stage3_zk/scripts/stage 3.4/` are analogous stage-specific helpers.
+- `stage3_zk/scripts/stage 3.2/`, `stage3_zk/scripts/stage 3.3/`, `stage3_zk/scripts/stage 3.4/`, and `stage3_zk/scripts/stage 3.5/` are analogous stage-specific helpers.
 
 Recommended single entrypoint (Windows-friendly):
 - `stage3_zk/scripts/run_stage3_tests.py` (invoked via npm scripts)
@@ -218,6 +229,7 @@ For thesis tables/figures, use:
 - `stage3_zk/reports/LATEST_REPRO_REPORT.md` (authoritative, reproducible timings + constraints + artifact sizes)
 - `stage3_zk/reports/FINAL_SUMMARY.md` and `stage3_zk/reports/stage3.md` (narrative/technical background)
 - `stage3_zk/reports/STAGE34_PROOF_REPORT.md` and `stage3_zk/reports/zk_stage34_scaling_benchmark.md` (Stage 3.4 Exact SHAP evidence)
+- `reports/input_commitment_appendix.md` and `stage3_zk/reports/STAGE35_INPUT_COMMITMENT_REPORT.md` (appendix-only input-commitment feasibility evidence)
 - `reports/model_registry_and_verifier_policy.md`, `reports/stage34_output_leakage_audit.md`, and `reports/exact_shap_reference_sensitivity.md` (thesis-facing policy and self-assessment)
 
 ---
@@ -261,5 +273,6 @@ For thesis tables/figures, use:
 1) Run notebooks 01 -> 06 to regenerate `outputs/` and ZK artifacts.
 2) In `stage3_zk/`, run a full reproducibility+evidence run: `npm run evidence:zk:full`
 3) Use `stage3_zk/reports/LATEST_REPRO_REPORT.md` for the appendix table (timings, constraints, proof/public sizes).
-4) Use `python tools/reproduce.py zk-stage34 --samples 1,2,3` for Stage 3.4 Exact SHAP proof evidence.
+4) Use `python tools/reproduce.py zk-stage34 --samples 1,2,3,4,5,6,7,8` for Stage 3.4 Exact SHAP proof evidence.
 5) Use `python tools/verify_stage34_policy.py --self-test` for verifier-side model-version binding evidence.
+6) Optional appendix only: from `stage3_zk/`, use `npm run compile:stage35` if build artifacts are missing, then `npm run evidence:stage35` for input-commitment feasibility evidence.

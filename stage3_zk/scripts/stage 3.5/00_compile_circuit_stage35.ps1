@@ -1,0 +1,46 @@
+# Compile script for Stage 3.5 - optional input-commitment prototype.
+# Requires Circom 2.x in WSL. This appendix circuit is intentionally separate
+# from the main Stage 3.4 Exact SHAP circuit.
+
+Set-Location "C:\Paper\Masters thesis\stage3_zk"
+
+Write-Host "======================================================="
+Write-Host "Compiling Input Commitment Prototype Circuit (Stage 3.5)"
+Write-Host "======================================================="
+
+$ErrorActionPreference = "Stop"
+
+$CIRCUIT_REL = "circuits\exact_shap_top3_commitment\exact_shap_top3_commitment.circom"
+$OUT_REL = "circuits\exact_shap_top3_commitment\build"
+
+Write-Host "Circuit: $CIRCUIT_REL"
+Write-Host "Output: $OUT_REL"
+
+New-Item -ItemType Directory -Force -Path $OUT_REL | Out-Null
+
+Write-Host ""
+Write-Host "[1/1] Compiling circuit with WSL Circom..."
+wsl bash -c "cd '/mnt/c/Paper/Masters thesis/stage3_zk/circuits/exact_shap_top3_commitment' && circom exact_shap_top3_commitment.circom -o build --r1cs --wasm --sym -l ../../node_modules"
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Compilation failed"
+    Write-Host "Make sure WSL has a Circom 2.x compiler on PATH."
+    exit 1
+}
+
+$r1csPath = "$OUT_REL\exact_shap_top3_commitment.r1cs"
+$wasmPath = "$OUT_REL\exact_shap_top3_commitment_js\exact_shap_top3_commitment.wasm"
+
+if (-not (Test-Path $r1csPath)) {
+    Write-Host "ERROR: R1CS file not generated"
+    exit 1
+}
+
+if (-not (Test-Path $wasmPath)) {
+    Write-Host "ERROR: WASM file not generated"
+    exit 1
+}
+
+Write-Host ""
+Write-Host "Stage 3.5 compile complete."
+Write-Host "Next:"
+Write-Host "  npm run evidence:stage35"

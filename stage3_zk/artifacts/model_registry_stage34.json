@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-05-22T15:25:29+00:00",
+  "created_utc": "2026-06-19T01:32:33+00:00",
   "stage": "3.4",
   "model_visibility": "public",
   "input_visibility": "private witness",
@@ -28,8 +28,8 @@
     {
       "path": "stage3_zk/artifacts/bounds.json",
       "status": "present",
-      "sha256": "c534c3f4d7814c34fbe19c6accf6ab20ce9326b800cc06473da2c0e7ec78c143",
-      "bytes": 185
+      "sha256": "e9820d60c6c21071de71e80668df588a01217b477349a1a5afa4b81ce7389654",
+      "bytes": 514
     },
     {
       "path": "stage3_zk/artifacts/exact_shap_reference.json",
@@ -40,17 +40,17 @@
     {
       "path": "stage3_zk/circuits/exact_shap_top3/exact_shap_top3.circom",
       "status": "present",
-      "sha256": "0ca1466fcddbd8b5ceb017279fb800cdfc05e89dea9b22bdba7edea237588fb7",
-      "bytes": 8534
+      "sha256": "27452d3b4f8495c158ee53f414dc8b4574f1cd946886aef4988c58bc37bcb9e5",
+      "bytes": 8824
     },
     {
       "path": "stage3_zk/circuits/exact_shap_top3/build/verification_key.json",
       "status": "present",
-      "sha256": "af7eab790ffc40d47bfcf4bd90208dd1aa0503d31c91feed59fe240a33ce8a74",
-      "bytes": 22671
+      "sha256": "6e06e219d733f6a692aac52d9c77005b3e52753ddbf4ba9913db43e29a6f699f",
+      "bytes": 22669
     }
   ],
-  "combined_sha256": "2f05fc6162c9a57bfd33c91ef43d10ce3d1ba7f55c0fa61189191aff11ef1c59",
+  "combined_sha256": "f31ed43b8b872fc71e917243441ff5c130acb1384e9f7ef46f638dd32a0858e7",
   "notes": [
     "This registry is a verifier-policy artifact, not a hidden-model commitment.",
     "Missing optional files are recorded instead of failing generation.",

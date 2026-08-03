@@ -4,13 +4,13 @@ Generated: 2026-05-22
 
 ## Purpose
 
-This report clarifies the model-version binding story for the implemented public-model, private-input Stage 3.4 design. The current IDS instantiation verifies semantic-group Exact SHAP top-3 explanations for an approved public Logistic Regression model. It does not implement hidden-model commitments or confidential-model proofs.
+This report clarifies the model-version binding story for the implemented public-model, private-input Stage 3.4 design. The current IDS instantiation verifies semantic-group Exact SHAP top-3 explanations for an approved public Logistic Regression model. It does not implement model-agnostic verification, hidden-model commitments, confidential-model proofs, or differential privacy. Input-provenance binding is outside the main Stage 3.4 claim; an optional Stage 3.5 appendix prototype evaluates a commitment-based binding point.
 
 ## Input Privacy Does Not Require an Input Commitment
 
 The processed network-flow vector `x_shifted[104]` is supplied to the Groth16 circuit as private witness data. The verifier sees the proof and public signals, but not the private witness. Under the zero-knowledge property, the verifier learns that some private input satisfies the verified relation without learning the raw feature values.
 
-Therefore, an input commitment is not required for input privacy in the current design. A commitment to the input may be useful in future deployments for other reasons, such as:
+Therefore, an input commitment is not required for input privacy in the current design. A commitment to the input may be useful for other reasons, such as:
 
 - cross-proof consistency, where several proofs must refer to the same hidden input;
 - provenance, where a later audit needs to bind a proof to an external logged event;
@@ -22,7 +22,9 @@ Those are useful system features, but they are not prerequisites for the current
 
 The implemented Stage 3.4 proof certifies that the public prediction and top-3 semantic explanation are consistent with some private witness `x_shifted[104]`. By itself, this does not prove that the witness came from a particular external SIEM row, network-flow log entry, hospital record, or other audit record. That binding belongs to a provenance layer outside the implemented proof relation.
 
-For deployments that require this stronger audit property, an input commitment can be added as an extension. A data-ingestion component would record a commitment such as `C_x = Hash(x_shifted, metadata, salt)` at the time the event is captured, and the circuit would check that the private witness opens to the public commitment. The verifier could then accept a proof only when the proof verifies and the public commitment matches the registered event. This strengthens auditability and cross-proof consistency, but it is distinct from input privacy and is not implemented in the current Stage 3.4 circuit.
+For deployments that require this stronger audit property, an input commitment can be added as an extension. A data-ingestion component would record a commitment such as `C_x = Hash(x_shifted, metadata, salt)` at the time the event is captured, and the circuit would check that the private witness opens to the public commitment. The verifier could then accept a proof only when the proof verifies and the public commitment matches the registered event. This strengthens auditability and cross-proof consistency, but it is distinct from input privacy and is not implemented in the Stage 3.4 circuit.
+
+The repository now includes an appendix-only Stage 3.5 prototype of this idea. It computes a public Poseidon rolling commitment over `(domain_tag, metadata_hash, salt, x_shifted[104])` and shows that tampering with the public commitment signal makes Groth16 verification fail. This is useful evidence for feasibility, but it is still not a complete provenance system unless a trusted ingestion registry records the commitment before proof generation.
 
 ## Public Model Binding
 
@@ -40,7 +42,7 @@ In the current public-model setting, this can be done by hashing and registering
 
 This is model binding, not model confidentiality. The verifier knows the model and checks its identity.
 
-Verifier-side model-version binding is not IDS-specific. It is required whenever a proof must be interpreted with respect to an approved public model version rather than arbitrary prover-selected public parameters. Similar logic applies to healthcare tabular models, credit-risk models, IoT monitoring models, and academic benchmark models.
+Verifier-side model-version binding is not IDS-specific. It is required whenever a proof must be interpreted with respect to an approved public model version rather than arbitrary prover-selected public parameters. In this repository, that logic is implemented for the approved public Logistic Regression IDS model; compatible public linear/logistic tabular models would require their own registered artifacts and evaluation.
 
 ## Verifier Acceptance Algorithm
 
@@ -95,7 +97,7 @@ That design would bind a private model to a public commitment. It is future work
 | Verified top-3 semantic explanation | Implemented |
 | Verified semantic-group Exact SHAP | Implemented in Stage 3.4 |
 | Public model registry / model-version binding | Thesis-level verifier policy |
-| Input commitment | Optional future work for provenance, audit binding, or cross-proof consistency |
+| Input commitment | Appendix-only Stage 3.5 prototype for provenance, audit binding, or cross-proof consistency |
 | Hidden model commitment | Future work |
 | Sumcheck/GKR | Future work |
 | Partition SHAP | Future work |
@@ -107,4 +109,4 @@ The thesis should claim public-model, private-input verification:
 
 > The verifier checks a registered approved public Logistic Regression model and a Stage 3.4 Groth16 proof showing that the public prediction and top-3 semantic Exact SHAP explanation were computed from the same private input. In this repository, the approved model is the IDS Logistic Regression artifact for the TON_IoT case study.
 
-It should not claim confidential-model support, hidden-model commitments, sumcheck/GKR, Partition SHAP, or XGBoost-in-ZK.
+It should not claim model-agnostic verification, confidential-model support, hidden-model commitments, differential privacy, full input-provenance binding, sumcheck/GKR, Partition SHAP, or XGBoost-in-ZK. If discussed, the Stage 3.5 input commitment should be labelled as an appendix prototype that needs an external trusted commitment registry.

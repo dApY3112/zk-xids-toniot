@@ -8,7 +8,7 @@ import json
 import os
 import subprocess
 import sys
-from typing import Dict, Tuple
+from typing import Dict, List, Tuple
 
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -55,7 +55,11 @@ def _make_cases(base: Dict) -> Dict[str, Dict]:
 
     bad_private_range = copy.deepcopy(base)
     bad_private_range["x_shifted"] = list(base["x_shifted"])
-    bad_private_range["x_shifted"][0] = -1
+    # The circuit requires x_shifted[i] < 2 * maxAbsX + 1, where maxAbsX
+    # is fixed in exact_shap_top3.circom as 297270816. Use an explicitly
+    # too-large non-negative value; negative JSON values can be normalized as
+    # field elements before the comparator catches them in some witness paths.
+    bad_private_range["x_shifted"][0] = 2 * 297270816 + 1
     cases["private_input_range_violation"] = bad_private_range
 
     return cases
@@ -112,6 +116,23 @@ def run_negative_tests(sample_id: int = 1) -> int:
     return 0
 
 
+def _parse_samples(argv: List[str]) -> List[int]:
+    if not argv:
+        return [1]
+    samples: List[int] = []
+    for arg in argv:
+        for part in arg.split(","):
+            part = part.strip()
+            if part:
+                samples.append(int(part))
+    return samples
+
+
 if __name__ == "__main__":
-    sample = int(sys.argv[1]) if len(sys.argv) > 1 else 1
-    raise SystemExit(run_negative_tests(sample))
+    sample_ids = _parse_samples(sys.argv[1:])
+    exit_code = 0
+    for sample in sample_ids:
+        print(f"\n=== Stage 3.4 negative witness tests: sample {sample} ===")
+        rc = run_negative_tests(sample)
+        exit_code = max(exit_code, rc)
+    raise SystemExit(exit_code)

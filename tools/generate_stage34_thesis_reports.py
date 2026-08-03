@@ -13,6 +13,7 @@ from typing import Dict, List, Sequence, Tuple
 REPO_ROOT = Path(__file__).resolve().parents[1]
 STAGE3 = REPO_ROOT / "stage3_zk"
 REPORTS = REPO_ROOT / "reports"
+OUTPUTS = REPO_ROOT / "outputs"
 
 
 STAGE_NAMES = {
@@ -83,6 +84,17 @@ def _stage34_proof_sizes(stage34: Dict) -> List[int]:
 
 def _stage34_public_sizes(stage34: Dict) -> List[int]:
     return [int(r["artifacts"]["public_bytes"]) for r in stage34["sample_results"]]
+
+
+def _sample_label(stage34: Dict) -> str:
+    samples = [int(x) for x in stage34.get("samples", [])]
+    if not samples:
+        samples = [int(row.get("sample")) for row in stage34.get("sample_results", [])]
+    if not samples:
+        return "the generated samples"
+    if samples == list(range(min(samples), max(samples) + 1)):
+        return f"samples {min(samples)}-{max(samples)}"
+    return "samples " + ", ".join(str(x) for x in samples)
 
 
 def _build_stage_rows(latest: Dict, stage34: Dict) -> List[Dict[str, object]]:
@@ -193,7 +205,7 @@ def _write_case_studies(stage34: Dict, group_map: Dict, model: Dict, reference: 
     lines.append("# Stage 3.4 Exact SHAP Case Studies\n\n")
     lines.append(f"Generated: {_utc_now_iso()} (UTC)\n\n")
     lines.append(
-        "These case studies use the three existing ZK test vectors. Stage 3.3 reports the old grouped "
+        "These case studies use the original three TP/TN/FN ZK test vectors. Stage 3.3 reports the old grouped "
         "linear attribution proxy, while Stage 3.4 verifies semantic-group Exact SHAP top-3 by absolute "
         "SHAP magnitude. Exact SHAP values are shown as signed integer score contributions at scale `Sx*Sw`.\n\n"
     )
@@ -243,23 +255,84 @@ def _write_case_studies(stage34: Dict, group_map: Dict, model: Dict, reference: 
     _write(REPORTS / "stage34_case_studies.md", lines)
 
 
-def _write_integration_report(latest: Dict, stage34: Dict, stage_rows: Sequence[Dict[str, object]]) -> None:
+def _quant_sentence(quant: Dict | None) -> str:
+    if not quant:
+        return ""
+    parts: List[str] = []
+    for row in quant.get("splits", []):
+        n = int(row.get("n", 0))
+        mismatches = int(row.get("prediction_mismatch_count", 0))
+        agreement = (1.0 - (mismatches / n)) * 100.0 if n else 0.0
+        top3 = float(row.get("top3_ordered_match_rate", 0.0)) * 100.0
+        overlap = float(row.get("mean_top3_overlap_count", 0.0))
+        parts.append(
+            f"{row.get('split')}: prediction agreement {agreement:.6f}% ({mismatches}/{n} mismatches), "
+            f"ordered top-3 match {top3:.6f}%, mean overlap {overlap:.4f}/3"
+        )
+    return "; ".join(parts)
+
+
+def _margin_sentence(margin: Dict | None) -> str:
+    if not margin:
+        return ""
+    parts: List[str] = []
+    for row in margin.get("splits", []):
+        stats = row.get("margin_scaled_stats", {})
+        small = row.get("small_margin_thresholds_scaled", {}).get("0.001", {})
+        parts.append(
+            f"{row.get('split')}: median margin {float(stats.get('median', 0.0)):.6f}, "
+            f"p5 {float(stats.get('p5', 0.0)):.6f}, <=0.001 in {float(small.get('rate', 0.0)) * 100.0:.4f}%"
+        )
+    return "; ".join(parts)
+
+
+def _write_integration_report(latest: Dict, stage34: Dict, stage_rows: Sequence[Dict[str, object]], quant: Dict | None) -> None:
     lines: List[str] = []
     lines.append("# Stage 3.4 Thesis Integration: Verified Semantic-Group Exact SHAP\n\n")
     lines.append(f"Generated: {_utc_now_iso()} (UTC)\n\n")
     lines.append("## Thesis Claim\n\n")
     lines.append(
-        "ZK-XIDS now implements SNARK verification of semantic-group Exact SHAP top-3 explanations for a "
-        "public Logistic Regression IDS model under private input features. This upgrades Stage 3.3's "
-        "engineering proxy (`sum_i |w_i*x_i|`) to a game-theoretically grounded explanation target while "
-        "preserving the SNARK-only Circom/Groth16 stack.\n\n"
+        "This thesis proposes a scoped public-model/private-input proof pattern for verifiable semantic "
+        "explanations under private inputs. The pattern is instantiated in an intrusion detection case study, "
+        "where an approved public Logistic Regression model classifies private network-flow features and "
+        "Stage 3.4 verifies a valid ordered non-increasing top-3 semantic-group Exact SHAP explanation. "
+        "This upgrades Stage 3.3's engineering attribution proxy (`sum_i |w_i*x_i|`) to a game-theoretically "
+        "grounded explanation target while preserving the Circom/Groth16 proof stack.\n\n"
+        "The implemented main claim is intentionally narrow: it targets public linear/logistic tabular models with "
+        "fixed semantic groups and a fixed reference vector. It is not a model-agnostic XAI verifier, does not "
+        "hide model weights, and does not provide differential privacy. Stage 3.4 does not bind the private "
+        "witness to a specific external event by itself; an optional Stage 3.5 appendix prototype evaluates an "
+        "input-commitment layer for that audit-binding use case.\n\n"
     )
 
     lines.append("## Research Questions\n\n")
-    lines.append("- RQ1: Can IDS inference be verified without revealing processed network-traffic features?\n")
+    lines.append("- RQ1: Can public linear/logistic tabular inference be verified without revealing processed features in an IDS instantiation?\n")
     lines.append("- RQ2: Can semantic explanations be verified cryptographically rather than trusted as client-supplied metadata?\n")
-    lines.append("- RQ3: Can semantic-group Exact SHAP be made feasible in a SNARK for a public Logistic Regression model?\n")
-    lines.append("- RQ4: What overhead and limitations arise when moving from an engineering attribution proxy to verified Exact SHAP?\n\n")
+    lines.append("- RQ3: Can semantic-group Exact SHAP be made feasible in a SNARK for an approved public Logistic Regression model?\n")
+    lines.append("- RQ4: What overhead and limitations arise when moving from an engineering attribution proxy to verified Exact SHAP in the intrusion detection case study?\n\n")
+
+    lines.append("## Contribution Framing\n\n")
+    lines.append("- C1. A public-model/private-input proof pattern for verifiable semantic explanations over public linear/logistic tabular models, instantiated on intrusion detection.\n")
+    lines.append("- C2. A semantic-group explanation abstraction that maps high-dimensional tabular features into human-readable groups.\n")
+    lines.append("- C3. A SNARK-verifiable semantic-group Exact SHAP top-3 method for public Logistic Regression with fixed reference masking.\n")
+    lines.append("- C4. A reproducible case-study evaluation covering IDS performance, explanation stability, proxy-vs-ExactSHAP comparison, proof cost, output leakage, reference sensitivity, model-version binding, negative tests, and an appendix-only input-commitment feasibility prototype.\n\n")
+
+    lines.append("## Generalization Scope: Proof Pattern vs. IDS Instantiation\n\n")
+    lines.append("| Layer | IDS-specific in this repository | Reusable beyond IDS |\n")
+    lines.append("|---|---|---|\n")
+    lines.append("| Dataset/task | TON_IoT, Normal vs Attack | Tabular private-input classification tasks with an approved public linear/logistic model and fixed semantic groups |\n")
+    lines.append("| Semantic groups | Protocol, Application, ConnectionState, Ports, TrafficVolume | Fixed human-meaningful feature groups |\n")
+    lines.append("| Model | Logistic Regression IDS model | Approved public linear/logistic models |\n")
+    lines.append("| Explanation | Semantic-group Exact SHAP over IDS groups | Semantic-group Exact SHAP over fixed groups |\n")
+    lines.append("| Proof relation | Groth16 proof for IDS artifacts | Same proof pattern with new artifacts for compatible public linear/logistic models |\n")
+    lines.append("| Evaluation | IDS metrics, FPR, SOC triage | Domain-specific metrics in other applications |\n\n")
+    lines.append(
+        "The implementation is validated only on the IDS case study. The Stage 3.4 relation itself is not inherently "
+        "IDS-specific: it verifies a public linear/logistic score, a fixed reference vector, fixed semantic groups, "
+        "and a top-3 semantic explanation computed from the same private input. Generalization to other domains "
+        "requires replacing the feature schema, semantic group map, reference vector, approved public model artifact, "
+        "circuit artifacts, and evaluation metrics.\n\n"
+    )
 
     lines.append("## Method Justification\n\n")
     lines.append(
@@ -275,6 +348,10 @@ def _write_integration_report(latest: Dict, stage34: Dict, stage_rows: Sequence[
         "`2.842171e-14`. Stage 3.4 proves the quantized integer form of this relation inside Groth16:\n\n"
     )
     lines.append("```text\nphi_g_int = sum_{i in G_g} w_int[i] * (x_int[i] - x_ref_int[i])\n```\n\n")
+    lines.append(
+        "For the formal relation, protocol construction, theorem statements, proof sketches, and leakage "
+        "boundaries, see `reports/formal_framework_and_security_guarantees.md`.\n\n"
+    )
 
     lines.append("## Stage 3.1-3.4 Comparison\n\n")
     lines.append(
@@ -292,9 +369,26 @@ def _write_integration_report(latest: Dict, stage34: Dict, stage_rows: Sequence[
 
     lines.append("\n## Correctness Evidence\n\n")
     lines.append("- Python coalition enumeration equals closed-form LR Exact SHAP: max difference `2.842171e-14`.\n")
-    lines.append("- Stage 3.4 valid witnesses pass for test samples 1, 2, and 3.\n")
-    lines.append("- Stage 3.4 Groth16 proof generation and verification pass for test samples 1, 2, and 3.\n")
-    lines.append("- The proof binds `y_hat` and Exact SHAP top-3 IDs to the same private shifted input vector.\n\n")
+    sample_label = _sample_label(stage34)
+    lines.append(f"- Stage 3.4 valid witnesses pass for {sample_label}.\n")
+    lines.append(f"- Stage 3.4 Groth16 proof generation and verification pass for {sample_label}.\n")
+    lines.append(f"- Stage 3.4 negative witness tests reject malformed inputs for {sample_label}.\n")
+    lines.append("- The extended Stage 3.4 vector set adds FP, high-confidence attack, high-confidence normal, borderline-score, and near-tie ranking cases; see `stage3_zk/reports/STAGE34_DIVERSE_TEST_VECTORS.md`.\n")
+    quant_evidence = _quant_sentence(quant)
+    if quant_evidence:
+        lines.append(f"- Float-vs-quantized LR agreement check: {quant_evidence}. See `reports/float_vs_quantized_lr_agreement.md`.\n")
+    lines.append("- The proof binds `y_hat` and a valid non-increasing Exact SHAP top-3 group ranking to the same private shifted input vector.\n")
+    lines.append("- The optional Stage 3.5 appendix prototype adds a public input commitment and rejects tampered commitment public signals for samples 1, 7, and 8. See `reports/input_commitment_appendix.md`.\n\n")
+
+    lines.append("## Ranking and Tie-Breaking\n\n")
+    lines.append(
+        "Stage 3.4 verifies that the public top-3 semantic group IDs are distinct, valid group IDs and that their "
+        "absolute Exact SHAP magnitudes are ordered non-increasingly and dominate the two remaining groups. The "
+        "circuit uses `>=` comparisons, so exact ties can admit multiple valid certified rankings. The witness "
+        "generator sorts ties deterministically by smaller group ID for reproducibility, but that secondary "
+        "tie-break is not enforced inside the current circuit. A deployment requiring a unique canonical ranking "
+        "would need an additional lexicographic tie-break constraint.\n\n"
+    )
 
     lines.append("## Negative Tests\n\n")
     lines.append("Stage 3.4 rejects malformed witnesses for:\n\n")
@@ -342,10 +436,26 @@ def _write_integration_report(latest: Dict, stage34: Dict, stage_rows: Sequence[
 
     lines.append("## Output Leakage\n\n")
     lines.append(
-        "The circuit hides raw input features and the exact semantic-group SHAP values. It intentionally reveals "
+        "The circuit hides processed input feature values and the exact semantic-group SHAP values. It intentionally reveals "
         "`y_hat` and the top-3 semantic group IDs because these are the certified IDS decision and explanation "
-        "summary. The resulting privacy claim is input-feature privacy, not complete behavioral secrecy. See "
+        "summary. The resulting privacy claim is input-feature privacy under the zero-knowledge property of "
+        "Groth16, parameterized by an explicit leakage function consisting of the approved public model/version "
+        "metadata, `y_hat`, and `top3_ids`. It is not complete behavioral secrecy and it is not differential "
+        "privacy, since the current system does not add noise to the disclosed outputs. See "
         "`reports/stage34_output_leakage_audit.md` for a distributional audit of these public outputs.\n\n"
+    )
+
+    lines.append("## Input Provenance and Audit Binding\n\n")
+    lines.append(
+        "Stage 3.4 proves that the public prediction and top-3 semantic explanation are consistent with the same "
+        "private witness. It does not, by itself, prove that the witness came from a specific external log row or "
+        "previously registered event.\n\n"
+        "The optional Stage 3.5 appendix prototype demonstrates one feasible extension: it computes a public "
+        "Poseidon rolling commitment over `(domain_tag, metadata_hash, salt, x_shifted[104])`. In the generated "
+        "evidence, valid proofs verify and tampering with the public commitment signal is rejected. This should be "
+        "described as a provenance binding point, not as a complete SIEM provenance system, because a real "
+        "deployment must also store and trust the ingestion-time commitment registry. See "
+        "`reports/input_commitment_appendix.md` and `stage3_zk/reports/STAGE35_INPUT_COMMITMENT_REPORT.md`.\n\n"
     )
 
     lines.append("## Reference Sensitivity\n\n")
@@ -355,13 +465,30 @@ def _write_integration_report(latest: Dict, stage34: Dict, stage_rows: Sequence[
         "See `reports/exact_shap_reference_sensitivity.md`.\n\n"
     )
 
+    lines.append("## Ranking Stability\n\n")
+    margin_path = OUTPUTS / "reports" / "exact_shap_ranking_margin.json"
+    margin = _read_json(margin_path) if margin_path.exists() else None
+    margin_evidence = _margin_sentence(margin)
+    lines.append(
+        "The proof verifies correctness of the claimed ranking for one private input; it does not prove that the "
+        "explanation is stable under nearby inputs. For Logistic Regression, each group SHAP value is linear in the "
+        "input, so perturbation sensitivity can be bounded by the group weight norm. This supports an optional "
+        "margin-based robustness analysis, but it is not implemented as a ZK claim in the current repository. "
+    )
+    if margin_evidence:
+        lines.append(f"The empirical rank-3 vs rank-4 margin analysis reports {margin_evidence}; see `reports/exact_shap_ranking_margin.md`.\n\n")
+    else:
+        lines.append("See `reports/exact_shap_ranking_margin.md` when generated.\n\n")
+
     lines.append("## Critical Self-Assessment\n\n")
     lines.append(
         "Stage 3.4 strengthens the thesis contribution, but the scope remains intentionally narrow. The model is public, "
         "only the input is private, and the verified Exact SHAP relation is specific to Logistic Regression with fixed "
-        "reference masking. The system does not provide confidential-model support, arbitrary-model Exact SHAP, "
-        "Partition SHAP, or sumcheck/GKR. The binary IDS task also remains constrained by the Logistic Regression "
-        "accuracy trade-off relative to the stronger XGBoost plaintext baseline.\n\n"
+        "reference masking. The system does not provide model-agnostic verification, confidential-model support, "
+        "differential privacy, arbitrary-model Exact SHAP, Partition SHAP, or sumcheck/GKR. Input-provenance "
+        "binding is only explored as an appendix Stage 3.5 prototype and still depends on an external trusted "
+        "commitment registry. The binary IDS task also remains constrained by the Logistic Regression accuracy "
+        "trade-off relative to the stronger XGBoost plaintext baseline.\n\n"
     )
 
     lines.append("## Thesis-Ready Conclusion\n\n")
@@ -378,13 +505,15 @@ def _write_integration_report(latest: Dict, stage34: Dict, stage_rows: Sequence[
 def main() -> int:
     latest = _read_json(STAGE3 / "reports" / "LATEST_REPRO_REPORT.json")
     stage34 = _read_json(STAGE3 / "reports" / "STAGE34_PROOF_REPORT.json")
+    quant_path = OUTPUTS / "reports" / "float_vs_quantized_lr_agreement.json"
+    quant = _read_json(quant_path) if quant_path.exists() else None
     group_map = _read_json(STAGE3 / "artifacts" / "group_map.json")
     model = _read_json(STAGE3 / "artifacts" / "model_public.json")
     reference = _read_json(STAGE3 / "artifacts" / "exact_shap_reference.json")
 
     stage_rows = _build_stage_rows(latest, stage34)
     _write_case_studies(stage34, group_map, model, reference)
-    _write_integration_report(latest, stage34, stage_rows)
+    _write_integration_report(latest, stage34, stage_rows, quant)
 
     print(f"Wrote: {REPORTS / 'stage34_case_studies.md'}")
     print(f"Wrote: {REPORTS / 'stage34_thesis_integration.md'}")

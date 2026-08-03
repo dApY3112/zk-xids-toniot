@@ -1,7 +1,9 @@
 # Stage 3: Zero-Knowledge Explainable IDS — Technical Notes
 
+> Scope note: this is a technical planning/background note for the original Stage 3.1-3.3 grouped-attribution prototype. Final thesis claims should use the public-model/private-input scope in `reports/formal_framework_and_security_guarantees.md` and the Stage 3.4 Exact SHAP reports. The current main claim is not model-agnostic, does not hide model weights, does not provide differential privacy, and does not bind a witness to a specific log row. Stage 3.5 only explores an appendix input-commitment prototype.
+
 ## Overview
-This stage implements a privacy-preserving explainability layer using zero-knowledge proofs (ZK-SNARKs). The system proves correct inference + semantic group ranking without revealing raw network traffic features.
+This stage implements a privacy-preserving explainability layer using zero-knowledge proofs (ZK-SNARKs). The system proves correct inference and semantic-group ranking over private processed network-flow features without revealing those feature values.
 
 ---
 
@@ -216,9 +218,9 @@ Latest Stage 3.3 repeated benchmark summary:
 
 ## 7. Security Assumptions
 
-1. **Soundness:** Malicious prover cannot forge a valid proof for incorrect `y_hat` or `top3_groups` without breaking the underlying zkSNARK security (computational assumption).
+1. **Soundness:** Malicious prover cannot forge a valid proof for incorrect `y_hat` or `top3_groups` without satisfying the circuit relation or breaking the underlying zkSNARK security.
 
-2. **Zero-Knowledge:** Verifier learns nothing about private `x_int` except what's revealed by public outputs (`y_hat`, `top3_groups`). The proof itself leaks no information about the feature values.
+2. **Zero-Knowledge:** Verifier learns no private feature values beyond the intended public outputs (`y_hat`, `top3_groups`) and public proof-system metadata.
 
 3. **Trusted Setup (Groth16 only):**
    - If using Groth16 zkSNARK, requires a one-time trusted setup ceremony.
@@ -235,6 +237,9 @@ Latest Stage 3.3 repeated benchmark summary:
 - **Field overflow:** Bounds must be carefully checked to ensure no overflow in 254-bit field. Current bounds are safe (35 bits max).
 - **Proof size:** Current zkSNARKs (Groth16) produce ~200-500 byte proofs. Acceptable for IDS deployment over network.
 - **Proving time:** 5-10 seconds per proof (CPU-only). Acceptable for offline audit or batch processing. Real-time detection still uses plaintext model.
+- **Public model only:** The implemented relation uses public Logistic Regression weights and does not protect model IP.
+- **No Stage 3.4 input provenance binding:** The proof certifies consistency with some private witness. Binding that witness to a specific SIEM event or log row requires an input commitment and an external trusted registry; Stage 3.5 explores the circuit-side commitment check as an appendix prototype.
+- **No differential privacy:** Public `y_hat` and top-k semantic group IDs are intentional output leakage.
 
 ### Future Directions
 1. **Multi-class classification:** Extend to detect specific attack types (not just binary).

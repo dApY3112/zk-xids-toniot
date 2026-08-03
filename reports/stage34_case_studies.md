@@ -1,8 +1,8 @@
 # Stage 3.4 Exact SHAP Case Studies
 
-Generated: 2026-05-22T15:27:41+00:00 (UTC)
+Generated: 2026-05-27T20:13:47+00:00 (UTC)
 
-These case studies use the three existing ZK test vectors. Stage 3.3 reports the old grouped linear attribution proxy, while Stage 3.4 verifies semantic-group Exact SHAP top-3 by absolute SHAP magnitude. Exact SHAP values are shown as signed integer score contributions at scale `Sx*Sw`.
+These case studies use the original three TP/TN/FN ZK test vectors. Stage 3.3 reports the old grouped linear attribution proxy, while Stage 3.4 verifies semantic-group Exact SHAP top-3 by absolute SHAP magnitude. Exact SHAP values are shown as signed integer score contributions at scale `Sx*Sw`.
 
 | Sample | Label | y_true | y_hat | Stage 3.3 old top-3 | Stage 3.4 Exact SHAP top-3 | Proof |
 |---:|---|---:|---:|---|---|---|
@@ -17,7 +17,7 @@ These case studies use the three existing ZK test vectors. Stage 3.3 reports the
 - LR integer score: `390,139,428`
 - Stage 3.3 old proxy top-3: Application, Protocol, TrafficVolume
 - Stage 3.4 Exact SHAP top-3: Application, ConnectionState, Protocol
-- Stage 3.4 proof status: `PASS` (witness 80 ms, prove 1090 ms, verify 672 ms)
+- Stage 3.4 proof status: `PASS` (witness 64 ms, prove 1280 ms, verify 711 ms)
 
 ### Group Values
 
@@ -40,7 +40,7 @@ This true-positive attack is verified as an attack by both the LR prediction pro
 - LR integer score: `-661,754,717`
 - Stage 3.3 old proxy top-3: Application, ConnectionState, Protocol
 - Stage 3.4 Exact SHAP top-3: ConnectionState, Protocol, TrafficVolume
-- Stage 3.4 proof status: `PASS` (witness 63 ms, prove 1083 ms, verify 605 ms)
+- Stage 3.4 proof status: `PASS` (witness 58 ms, prove 1248 ms, verify 817 ms)
 
 ### Group Values
 
@@ -63,7 +63,7 @@ This true-negative normal sample shows why signed-reference explanations are use
 - LR integer score: `-307,632,372`
 - Stage 3.3 old proxy top-3: Application, Protocol, TrafficVolume
 - Stage 3.4 Exact SHAP top-3: Protocol, Application, ConnectionState
-- Stage 3.4 proof status: `PASS` (witness 61 ms, prove 1006 ms, verify 605 ms)
+- Stage 3.4 proof status: `PASS` (witness 63 ms, prove 1009 ms, verify 630 ms)
 
 ### Group Values
 

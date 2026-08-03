@@ -1,0 +1,132 @@
+{
+  "created_utc": "2026-05-27T20:12:26+00:00",
+  "purpose": "Diverse Stage 3.4 test vectors beyond TP/TN/FN.",
+  "score_bound_int": 68719476736,
+  "samples": [
+    {
+      "sample_no": 4,
+      "label": "FP_normal",
+      "row_in_test_split": 206297,
+      "dataset_index": 2037930,
+      "y_true": 0,
+      "y_hat": 1,
+      "score_int": 23752516133,
+      "score_abs_int": 23752516133,
+      "top3_ids": [
+        5,
+        1,
+        3
+      ],
+      "other2_ids": [
+        2,
+        4
+      ],
+      "rank3_rank4_margin_int": 291043568,
+      "top3_groups": [
+        "TrafficVolume",
+        "Protocol",
+        "ConnectionState"
+      ]
+    },
+    {
+      "sample_no": 5,
+      "label": "HighConf_attack",
+      "row_in_test_split": 199211,
+      "dataset_index": 497442,
+      "y_true": 1,
+      "y_hat": 1,
+      "score_int": 46656741774,
+      "score_abs_int": 46656741774,
+      "top3_ids": [
+        5,
+        3,
+        1
+      ],
+      "other2_ids": [
+        2,
+        4
+      ],
+      "rank3_rank4_margin_int": 117262245,
+      "top3_groups": [
+        "TrafficVolume",
+        "ConnectionState",
+        "Protocol"
+      ]
+    },
+    {
+      "sample_no": 6,
+      "label": "HighConf_normal",
+      "row_in_test_split": 497400,
+      "dataset_index": 1714021,
+      "y_true": 0,
+      "y_hat": 0,
+      "score_int": -67272542694,
+      "score_abs_int": 67272542694,
+      "top3_ids": [
+        5,
+        3,
+        2
+      ],
+      "other2_ids": [
+        1,
+        4
+      ],
+      "rank3_rank4_margin_int": 132364379,
+      "top3_groups": [
+        "TrafficVolume",
+        "ConnectionState",
+        "Application"
+      ]
+    },
+    {
+      "sample_no": 7,
+      "label": "Borderline_score",
+      "row_in_test_split": 19818,
+      "dataset_index": 583370,
+      "y_true": 1,
+      "y_hat": 0,
+      "score_int": -133791,
+      "score_abs_int": 133791,
+      "top3_ids": [
+        2,
+        5,
+        3
+      ],
+      "other2_ids": [
+        1,
+        4
+      ],
+      "rank3_rank4_margin_int": 29012299,
+      "top3_groups": [
+        "Application",
+        "TrafficVolume",
+        "ConnectionState"
+      ]
+    },
+    {
+      "sample_no": 8,
+      "label": "SmallTop3Margin",
+      "row_in_test_split": 266195,
+      "dataset_index": 1406019,
+      "y_true": 1,
+      "y_hat": 1,
+      "score_int": 755662630,
+      "score_abs_int": 755662630,
+      "top3_ids": [
+        3,
+        1,
+        4
+      ],
+      "other2_ids": [
+        2,
+        5
+      ],
+      "rank3_rank4_margin_int": 342,
+      "top3_groups": [
+        "ConnectionState",
+        "Protocol",
+        "Ports"
+      ]
+    }
+  ]
+}

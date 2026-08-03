@@ -2,6 +2,8 @@
 
 Tai lieu nay tom tat repo **ZK-XIDS: Zero-Knowledge Privacy-Preserving Intrusion Detection System** de mot ben thu ba co the doc nhanh, hieu dung project, tai lap ket qua can thiet, va de xuat them scope cho thesis.
 
+Scope guardrail: implementation hien tai la public-model/private-input. Claim nen duoc gioi han cho approved public Logistic Regression va cac public linear/logistic tabular models tuong thich voi fixed semantic groups va fixed reference vector. Repo khong claim model-agnostic verification, confidential-model proof, differential privacy, hay full provenance binding. Stage 3.5 chi la appendix prototype cho input commitment/provenance binding point.
+
 Ngay tao tai lieu: 2026-05-21  
 Nguon chinh: `README.md`, `reports/*.md`, `stage3_zk/reports/*.md`, va mot so file cau hinh trong repo.
 
@@ -11,11 +13,11 @@ Project nay xay dung mot he thong IDS bao ve quyen rieng tu tren dataset TON_IoT
 
 1. **ML intrusion detection**: xu ly du lieu, chia train/validation/test, train baseline Logistic Regression va XGBoost cho bai toan binary classification `Normal` vs `Attack`.
 2. **Explainability**: tao giai thich top-k theo feature, sau do gom 104 features thanh 5 semantic groups de explanation on dinh va de hieu hon.
-3. **Zero-Knowledge proof**: dung Circom + Groth16 de prover chung minh rang du doan va top-3 semantic explanation la dung theo model da cong bo, nhung khong tiet lo raw network traffic features.
+3. **Zero-Knowledge proof**: dung Circom + Groth16 de prover chung minh rang du doan va top-3 semantic explanation la dung theo approved public model, nhung khong tiet lo processed input feature values.
 
 Thong diep thesis manh nhat:
 
-> ZK-XIDS cho phep mot client chung minh voi SOC/verifier rang mot mau network traffic duoc phan loai dung boi IDS model va top-3 semantic explanation la that, trong khi van giu kin input features.
+> ZK-XIDS cho phep mot client chung minh voi SOC/verifier rang mot private processed network-flow vector duoc phan loai dung boi approved public IDS model va top-3 semantic explanation la that, trong khi van giu kin feature values.
 
 ## 2. Problem Statement
 
@@ -447,7 +449,8 @@ Environment warning:
 
 - Reports say the canonical ML environment is Conda Python `3.10`.
 - Some latest ZK evidence was generated with Python `3.12.3`.
-- `requirements.in` lists ML dependencies, but `requirements.lock.txt` currently does not include the full ML stack. See "Known Issues" below.
+- `requirements.in` lists ML dependencies. The repo now separates pinned direct dependencies into `requirements-ml.lock.txt` and `requirements-docs.lock.txt`, while `requirements.lock.txt` installs both stacks. Node/ZK dependencies are handled by `stage3_zk/package-lock.json`.
+- Stage 3.4 was recompiled from `exact_shap_top3.circom` with WSL Circom `2.2.3` on 2026-05-27, followed by forced Groth16 setup and fresh sample proofs. The current Stage 3.4 registry digest is `6c3c9e086aceb1f2a0038c1c3726baf49998a310fcd64421b98cadaf39e32b14`.
 
 ## 10. Current Strengths
 
@@ -458,7 +461,7 @@ Environment warning:
 
 2. **Good thesis-grade evaluation**
    - Goes beyond accuracy.
-   - Includes class imbalance metrics, threshold tuning, calibration, drift proxy, and cost-based thresholding.
+   - Includes class imbalance metrics, threshold tuning, calibration, drift proxy, file-wise holdout, attack-type error analysis, and cost-based thresholding.
 
 3. **Strong ZK artifact trail**
    - Circuits implemented for 104 features.
@@ -476,7 +479,7 @@ Environment warning:
 
 These are useful for a third party reviewing or extending the project.
 
-### 11.1 Dependency lock mismatch
+### 11.1 Dependency lock status
 
 `requirements.in` contains:
 
@@ -487,27 +490,20 @@ These are useful for a third party reviewing or extending the project.
 - `joblib`
 - `matplotlib`
 
-But `requirements.lock.txt` currently contains document/PDF-related packages only:
+The dependency files are now split by purpose:
 
-- `charset-normalizer`
-- `lxml`
-- `pillow`
-- `pypdf`
-- `python-docx`
-- `reportlab`
-- `typing_extensions`
+- `requirements-ml.lock.txt`: pinned direct ML/evaluation dependencies.
+- `requirements-docs.lock.txt`: pinned direct document/report helper dependencies.
+- `requirements.lock.txt`: meta file that installs both Python stacks.
+- `stage3_zk/package-lock.json`: Node/ZK dependency lock for snarkjs/circomlib tooling.
 
-Risk:
+Remaining caveat:
 
-- `pip install -r requirements.lock.txt` may not reproduce the ML pipeline.
+- These Python lock files pin direct dependencies, not a full transitive Conda environment export. For strict warning-free reproduction of pickled models, the canonical Conda Python 3.10 environment described in the README remains preferred.
 
-Suggested fix:
+Suggested maintenance:
 
-- Regenerate a real ML lock file from the canonical environment.
-- Or split into:
-  - `requirements-ml.lock.txt`
-  - `requirements-docs.lock.txt`
-  - `requirements-zk-node` handled by `package-lock.json`
+- If the canonical environment changes, regenerate `requirements-ml.lock.txt` from that environment and rerun the ML reports.
 
 ### 11.2 ZK README should stay in sync
 
@@ -519,7 +515,7 @@ Suggested maintenance:
 
 ### 11.3 Conflicting benchmark numbers across reports
 
-Historical Stage 3 benchmark artifacts include faster Node API timings, while latest report uses CLI/harness wall-clock timings around 1.3-1.5s prove and 0.5-0.7s verify.
+Historical Stage 3 benchmark artifacts include faster Node API timings, while the latest Stage 3.4 proof report after the WSL Circom rebuild uses CLI/harness wall-clock timings around roughly 1.0-1.3s prove and 0.6-0.8s verify for samples 1-8.
 
 Suggested thesis approach:
 
@@ -549,10 +545,14 @@ Risk:
 
 - IDS deployment often faces temporal drift or file/source drift.
 
-Suggested improvement:
+Current mitigation:
 
-- Add file-wise or time-wise split if timestamp/file metadata can be recovered.
-- Compare random stratified split vs chronological/file holdout.
+- `reports/filewise_holdout.md` now trains Logistic Regression on earlier-numbered processed CSV files and evaluates on held-out files `Network_dataset_20.csv` to `Network_dataset_23.csv`.
+- This should be cited as a source-file robustness check, not as true timestamp validation.
+
+Remaining improvement:
+
+- Add a true time-wise split if reliable timestamp/file chronology metadata can be recovered.
 
 ### 11.6 Logistic Regression performance gap
 
@@ -600,7 +600,7 @@ Verifier learns:
 
 Risk:
 
-- Even if raw features are private, output explanation may leak some high-level behavioral information.
+- Even if processed feature values are private, output explanation may leak some high-level behavioral information.
 
 Suggested addition:
 
@@ -643,13 +643,13 @@ This section is designed for a third party to propose or implement improvements.
 
 ### 12.2 ML and data improvements
 
-1. Add file-wise or time-wise validation:
-   - Hold out one or more processed CSV shards.
-   - Compare with current random stratified split.
+1. Add time-wise validation:
+   - File-wise holdout is now implemented in `reports/filewise_holdout.md`.
+   - Remaining stronger version is a true chronological split if timestamp semantics are reliable.
 
 2. Add attack-type analysis without using `type` for training:
-   - Evaluate false negatives by attack type.
-   - Report whether some attack families are missed more often.
+   - Implemented in `reports/attack_type_error_analysis.md`.
+   - It reports false negatives by attack family and keeps `type` as post-hoc metadata only.
 
 3. Add confusion matrix per operating point:
    - Already present in decision engineering report.
@@ -661,8 +661,9 @@ This section is designed for a third party to propose or implement improvements.
    - Explain why Attack recall matters for missed attacks.
 
 5. Compare Logistic Regression quantized vs float:
-   - Measure prediction agreement after quantization.
-   - Report mismatch rate and examples.
+   - Implemented in `reports/float_vs_quantized_lr_agreement.md`.
+   - Validation/test prediction agreement is above 99.99%, with a small number of boundary mismatches.
+   - Ordered Exact SHAP top-3 agreement is about 93.8%; mean top-3 overlap is about 2.94/3.
 
 6. Add calibration-aware threshold selection:
    - Compare raw, Platt, and isotonic thresholds.
@@ -700,9 +701,10 @@ This section is designed for a third party to propose or implement improvements.
    - How to run evidence report.
    - How to interpret public signals.
 
-2. Add model commitment:
-   - Instead of exposing all public weights in every proof, publish model hash/commitment.
-   - Discuss trade-off between verifier simplicity and communication size.
+2. Add model binding / future model commitment:
+   - Current design keeps weights public and relies on verifier-side artifact registry checks.
+   - A future hidden-model variant could publish a model commitment instead of public weights.
+   - Discuss trade-off between verifier simplicity, communication size, and model confidentiality.
 
 3. Clarify public signal encoding:
    - Negative weights appear as field elements.
@@ -844,9 +846,9 @@ These questions are worth resolving before final thesis submission:
 
 1. Should the final thesis use CLI/harness timing or Node API timing for ZK results?
 2. Should `stage3_zk/README.md` include more low-level troubleshooting for Circom/snarkjs setup?
-3. Should `requirements.lock.txt` be regenerated to include ML dependencies?
-4. Can the split be strengthened with time/file holdout?
-5. Should quantization mismatch between float LR and integer LR be measured explicitly?
+3. Should a full transitive Conda/pip environment export be added in addition to the direct dependency locks?
+4. File-wise holdout is now implemented in `reports/filewise_holdout.md`; can it be strengthened further with true chronological validation?
+5. Quantization mismatch between float LR and integer LR is now measured in `reports/float_vs_quantized_lr_agreement.md`; decide how much of it belongs in the main thesis vs appendix.
 6. Should the model be public, or should future work include model privacy?
 7. Are top-3 semantic group IDs enough, or should exact group contribution ranges be optionally disclosed?
 8. Should attack-type analysis be added as post-hoc evaluation?

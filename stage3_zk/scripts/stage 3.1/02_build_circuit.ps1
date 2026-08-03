@@ -28,7 +28,7 @@ New-Item -ItemType Directory -Force -Path $OUT_REL | Out-Null
 # 1. Compile with WSL circom
 Write-Host ""
 Write-Host "[1/4] Compiling circuit with WSL circom..."
-wsl bash -c "cd '/mnt/c/Paper/Masters thesis/stage3_zk/circuits/inference_only' && /usr/local/bin/circom inference_only.circom -o build --r1cs --wasm --sym -l ../../node_modules"
+wsl bash -c "cd '/mnt/c/Paper/Masters thesis/stage3_zk/circuits/inference_only' && circom inference_only.circom -o build --r1cs --wasm --sym -l ../../node_modules"
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Compilation failed"
     exit 1

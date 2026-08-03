@@ -1,6 +1,10 @@
 {
   "max_abs_x_int": 297270816,
   "max_abs_w_int": 122130,
-  "max_abs_score_int": 22988183559,
-  "note": "These bounds must fit in ZK field (typically ~254 bits for BN254 curve)"
+  "observed_sampled_max_abs_score_int": 22988183559,
+  "stage34_score_bound_B": 68719476736,
+  "score_observation_method": "sampled_test_subset",
+  "score_observation_sample_size": 5000,
+  "score_observation_seed": 42,
+  "note": "max_abs_x_int and max_abs_w_int are used for shifted input/model range checks. observed_sampled_max_abs_score_int is empirical metadata from sampled test scores. stage34_score_bound_B is the Stage 3.4 circuit score bound."
 }

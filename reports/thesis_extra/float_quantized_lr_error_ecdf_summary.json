@@ -1,0 +1,144 @@
+{
+  "created_utc": "2026-06-14T11:49:33+00:00",
+  "definition": "absolute_score_error = abs((score_int / (Sx * Sw)) - float_score)",
+  "splits": {
+    "val": {
+      "sample_count": 502628,
+      "mean_absolute_error": 0.04094588002282042,
+      "median_absolute_error": 0.023668385094655298,
+      "p90": 0.1114262014620607,
+      "p95": 0.11688922587122191,
+      "p99": 0.21847112920202774,
+      "p99_9": 0.5806454179192397,
+      "maximum_absolute_error": 161.20808244108775,
+      "mean_signed_error": -0.027578463423677316,
+      "standard_deviation": 0.2913770501278505,
+      "prediction_mismatches": 44,
+      "prediction_agreement": 0.9999124601096636,
+      "prediction_agreement_percent": 99.99124601096636,
+      "mismatch_error_statistics": {
+        "sample_count": 44,
+        "mean": 0.08095947646830565,
+        "median": 0.04383604485979742,
+        "p95": 0.17380846829727184,
+        "maximum": 0.1767165065502012
+      },
+      "non_mismatch_error_statistics": {
+        "sample_count": 502584,
+        "mean": 0.040942376930315286,
+        "median": 0.02366396630832379,
+        "p95": 0.11688692648920415,
+        "maximum": 161.20808244108775
+      },
+      "threshold_percentages": {
+        "le_0.001": {
+          "threshold": 0.001,
+          "count": 3302,
+          "rate": 0.006569470861153776,
+          "percent": 0.6569470861153776
+        },
+        "le_0.01": {
+          "threshold": 0.01,
+          "count": 86156,
+          "rate": 0.17141106345050414,
+          "percent": 17.141106345050414
+        },
+        "le_0.05": {
+          "threshold": 0.05,
+          "count": 353134,
+          "rate": 0.7025752644102596,
+          "percent": 70.25752644102596
+        },
+        "le_0.1": {
+          "threshold": 0.1,
+          "count": 443806,
+          "rate": 0.8829711038780171,
+          "percent": 88.29711038780171
+        },
+        "le_0.5": {
+          "threshold": 0.5,
+          "count": 501998,
+          "rate": 0.9987465879338199,
+          "percent": 99.87465879338198
+        },
+        "le_1": {
+          "threshold": 1.0,
+          "count": 502305,
+          "rate": 0.9993573776232124,
+          "percent": 99.93573776232124
+        }
+      },
+      "zero_error_count": 0,
+      "zero_error_rate": 0.0
+    },
+    "test": {
+      "sample_count": 502628,
+      "mean_absolute_error": 0.041296789418792924,
+      "median_absolute_error": 0.023538451918748482,
+      "p90": 0.11137988594704425,
+      "p95": 0.11691256437874084,
+      "p99": 0.21958099524083718,
+      "p99_9": 0.6137703248929328,
+      "maximum_absolute_error": 154.91102153826614,
+      "mean_signed_error": -0.027199877201543005,
+      "standard_deviation": 0.33714696126210647,
+      "prediction_mismatches": 29,
+      "prediction_agreement": 0.9999423032540965,
+      "prediction_agreement_percent": 99.99423032540965,
+      "mismatch_error_statistics": {
+        "sample_count": 29,
+        "mean": 0.09562121792016154,
+        "median": 0.048893951834238614,
+        "p95": 0.174791190088278,
+        "maximum": 0.18033220127510008
+      },
+      "non_mismatch_error_statistics": {
+        "sample_count": 502599,
+        "mean": 0.041293654895193536,
+        "median": 0.02353685981212239,
+        "p95": 0.1169115554397809,
+        "maximum": 154.91102153826614
+      },
+      "threshold_percentages": {
+        "le_0.001": {
+          "threshold": 0.001,
+          "count": 3380,
+          "rate": 0.006724655212204653,
+          "percent": 0.6724655212204653
+        },
+        "le_0.01": {
+          "threshold": 0.01,
+          "count": 86792,
+          "rate": 0.17267641277445744,
+          "percent": 17.267641277445744
+        },
+        "le_0.05": {
+          "threshold": 0.05,
+          "count": 353851,
+          "rate": 0.7040017667141504,
+          "percent": 70.40017667141504
+        },
+        "le_0.1": {
+          "threshold": 0.1,
+          "count": 444053,
+          "rate": 0.8834625209896783,
+          "percent": 88.34625209896782
+        },
+        "le_0.5": {
+          "threshold": 0.5,
+          "count": 501997,
+          "rate": 0.9987445983908576,
+          "percent": 99.87445983908576
+        },
+        "le_1": {
+          "threshold": 1.0,
+          "count": 502287,
+          "rate": 0.999321565849893,
+          "percent": 99.9321565849893
+        }
+      },
+      "zero_error_count": 0,
+      "zero_error_rate": 0.0
+    }
+  }
+}

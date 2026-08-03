@@ -2,7 +2,7 @@
 
 Generated: 2026-05-22T15:25:29+00:00 (UTC)
 
-Stage 3.4 intentionally reveals the public prediction `y_hat` and the top-3 semantic group IDs. It does not reveal raw input features or exact semantic-group SHAP magnitudes. This audit summarizes the information carried by those public explanation outputs on the Exact SHAP evaluation subset.
+Stage 3.4 intentionally reveals the public prediction `y_hat` and the top-3 semantic group IDs. It does not reveal processed input feature values or exact semantic-group SHAP magnitudes. This audit summarizes the information carried by those public explanation outputs on the Exact SHAP evaluation subset.
 
 - Samples audited: `1100`
 - Predicted-label entropy: `0.4395` bits

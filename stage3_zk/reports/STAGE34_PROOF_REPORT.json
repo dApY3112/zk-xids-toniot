@@ -1,10 +1,15 @@
 {
-  "created_utc": "2026-05-22T14:47:01+00:00",
-  "started_utc": "2026-05-22T14:46:55+00:00",
+  "created_utc": "2026-05-27T20:12:49+00:00",
+  "started_utc": "2026-05-27T20:12:33+00:00",
   "samples": [
     1,
     2,
-    3
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
   ],
   "setup_steps": [
     {
@@ -12,6 +17,112 @@
       "status": "SKIP",
       "duration_ms": 0,
       "reason": "existing final zkey and verification key"
+    }
+  ],
+  "prepare_steps": [
+    {
+      "cmd": [
+        "C:\\Anaconda\\python.exe",
+        "C:\\Paper\\Masters thesis\\stage3_zk\\scripts\\stage 3.4\\01_prepare_input_stage34.py",
+        "1"
+      ],
+      "returncode": 0,
+      "duration_ms": 79,
+      "stdout": "OK: Prepared Stage 3.4 circuit input: C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\input_sample_1.json\n   Sample: TP_attack\n   Score: 390139428\n   y_hat: 1\n   Semantic-group Exact SHAP phi_int sorted by abs:\n   * [1] Group 2 Application         : phi=-300,903,907, abs=300,903,907\n   * [2] Group 3 ConnectionState     : phi=-260,335,315, abs=260,335,315\n   * [3] Group 1 Protocol            : phi=168,539,528, abs=168,539,528\n     [4] Group 4 Ports               : phi=44,447,753, abs=44,447,753\n     [5] Group 5 TrafficVolume       : phi=-23,647,598, abs=23,647,598\n   Top-3 Exact SHAP groups (public): [2, 3, 1]\n   Other 2 groups (private):        [4, 5]\n",
+      "stderr": "",
+      "step": "prepare_input_sample_1",
+      "status": "PASS"
+    },
+    {
+      "cmd": [
+        "C:\\Anaconda\\python.exe",
+        "C:\\Paper\\Masters thesis\\stage3_zk\\scripts\\stage 3.4\\01_prepare_input_stage34.py",
+        "2"
+      ],
+      "returncode": 0,
+      "duration_ms": 73,
+      "stdout": "OK: Prepared Stage 3.4 circuit input: C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\input_sample_2.json\n   Sample: TN_normal\n   Score: -661754717\n   y_hat: 0\n   Semantic-group Exact SHAP phi_int sorted by abs:\n   * [1] Group 3 ConnectionState     : phi=-1,601,726,163, abs=1,601,726,163\n   * [2] Group 1 Protocol            : phi=168,539,528, abs=168,539,528\n   * [3] Group 5 TrafficVolume       : phi=72,926,653, abs=72,926,653\n     [4] Group 2 Application         : phi=-51,277,283, abs=51,277,283\n     [5] Group 4 Ports               : phi=-12,256,419, abs=12,256,419\n   Top-3 Exact SHAP groups (public): [3, 1, 5]\n   Other 2 groups (private):        [2, 4]\n",
+      "stderr": "",
+      "step": "prepare_input_sample_2",
+      "status": "PASS"
+    },
+    {
+      "cmd": [
+        "C:\\Anaconda\\python.exe",
+        "C:\\Paper\\Masters thesis\\stage3_zk\\scripts\\stage 3.4\\01_prepare_input_stage34.py",
+        "3"
+      ],
+      "returncode": 0,
+      "duration_ms": 74,
+      "stdout": "OK: Prepared Stage 3.4 circuit input: C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\input_sample_3.json\n   Sample: FN_attack\n   Score: -307632372\n   y_hat: 0\n   Semantic-group Exact SHAP phi_int sorted by abs:\n   * [1] Group 1 Protocol            : phi=-2,059,487,864, abs=2,059,487,864\n   * [2] Group 2 Application         : phi=1,432,654,365, abs=1,432,654,365\n   * [3] Group 3 ConnectionState     : phi=-260,335,315, abs=260,335,315\n     [4] Group 5 TrafficVolume       : phi=-233,813,764, abs=233,813,764\n     [5] Group 4 Ports               : phi=51,311,239, abs=51,311,239\n   Top-3 Exact SHAP groups (public): [1, 2, 3]\n   Other 2 groups (private):        [5, 4]\n",
+      "stderr": "",
+      "step": "prepare_input_sample_3",
+      "status": "PASS"
+    },
+    {
+      "cmd": [
+        "C:\\Anaconda\\python.exe",
+        "C:\\Paper\\Masters thesis\\stage3_zk\\scripts\\stage 3.4\\01_prepare_input_stage34.py",
+        "4"
+      ],
+      "returncode": 0,
+      "duration_ms": 82,
+      "stdout": "OK: Prepared Stage 3.4 circuit input: C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\input_sample_4.json\n   Sample: FP_normal\n   Score: 23752516133\n   y_hat: 1\n   Semantic-group Exact SHAP phi_int sorted by abs:\n   * [1] Group 5 TrafficVolume       : phi=25,431,222,827, abs=25,431,222,827\n   * [2] Group 1 Protocol            : phi=-2,059,487,864, abs=2,059,487,864\n   * [3] Group 3 ConnectionState     : phi=-342,320,851, abs=342,320,851\n     [4] Group 2 Application         : phi=-51,277,283, abs=51,277,283\n     [5] Group 4 Ports               : phi=12,340,337, abs=12,340,337\n   Top-3 Exact SHAP groups (public): [5, 1, 3]\n   Other 2 groups (private):        [2, 4]\n",
+      "stderr": "",
+      "step": "prepare_input_sample_4",
+      "status": "PASS"
+    },
+    {
+      "cmd": [
+        "C:\\Anaconda\\python.exe",
+        "C:\\Paper\\Masters thesis\\stage3_zk\\scripts\\stage 3.4\\01_prepare_input_stage34.py",
+        "5"
+      ],
+      "returncode": 0,
+      "duration_ms": 73,
+      "stdout": "OK: Prepared Stage 3.4 circuit input: C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\input_sample_5.json\n   Sample: HighConf_attack\n   Score: 46656741774\n   y_hat: 1\n   Semantic-group Exact SHAP phi_int sorted by abs:\n   * [1] Group 5 TrafficVolume       : phi=46,050,541,576, abs=46,050,541,576\n   * [2] Group 3 ConnectionState     : phi=-260,335,315, abs=260,335,315\n   * [3] Group 1 Protocol            : phi=168,539,528, abs=168,539,528\n     [4] Group 2 Application         : phi=-51,277,283, abs=51,277,283\n     [5] Group 4 Ports               : phi=-12,765,699, abs=12,765,699\n   Top-3 Exact SHAP groups (public): [5, 3, 1]\n   Other 2 groups (private):        [2, 4]\n",
+      "stderr": "",
+      "step": "prepare_input_sample_5",
+      "status": "PASS"
+    },
+    {
+      "cmd": [
+        "C:\\Anaconda\\python.exe",
+        "C:\\Paper\\Masters thesis\\stage3_zk\\scripts\\stage 3.4\\01_prepare_input_stage34.py",
+        "6"
+      ],
+      "returncode": 0,
+      "duration_ms": 77,
+      "stdout": "OK: Prepared Stage 3.4 circuit input: C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\input_sample_6.json\n   Sample: HighConf_normal\n   Score: -67272542694\n   y_hat: 0\n   Semantic-group Exact SHAP phi_int sorted by abs:\n   * [1] Group 5 TrafficVolume       : phi=-68,664,835,096, abs=68,664,835,096\n   * [2] Group 3 ConnectionState     : phi=715,954,477, abs=715,954,477\n   * [3] Group 2 Application         : phi=-300,903,907, abs=300,903,907\n     [4] Group 1 Protocol            : phi=168,539,528, abs=168,539,528\n     [5] Group 4 Ports               : phi=46,663,337, abs=46,663,337\n   Top-3 Exact SHAP groups (public): [5, 3, 2]\n   Other 2 groups (private):        [1, 4]\n",
+      "stderr": "",
+      "step": "prepare_input_sample_6",
+      "status": "PASS"
+    },
+    {
+      "cmd": [
+        "C:\\Anaconda\\python.exe",
+        "C:\\Paper\\Masters thesis\\stage3_zk\\scripts\\stage 3.4\\01_prepare_input_stage34.py",
+        "7"
+      ],
+      "returncode": 0,
+      "duration_ms": 74,
+      "stdout": "OK: Prepared Stage 3.4 circuit input: C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\input_sample_7.json\n   Sample: Borderline_score\n   Score: -133791\n   y_hat: 0\n   Semantic-group Exact SHAP phi_int sorted by abs:\n   * [1] Group 2 Application         : phi=-502,230,499, abs=502,230,499\n   * [2] Group 5 TrafficVolume       : phi=-272,347,137, abs=272,347,137\n   * [3] Group 3 ConnectionState     : phi=-197,551,827, abs=197,551,827\n     [4] Group 1 Protocol            : phi=168,539,528, abs=168,539,528\n     [5] Group 4 Ports               : phi=41,417,177, abs=41,417,177\n   Top-3 Exact SHAP groups (public): [2, 5, 3]\n   Other 2 groups (private):        [1, 4]\n",
+      "stderr": "",
+      "step": "prepare_input_sample_7",
+      "status": "PASS"
+    },
+    {
+      "cmd": [
+        "C:\\Anaconda\\python.exe",
+        "C:\\Paper\\Masters thesis\\stage3_zk\\scripts\\stage 3.4\\01_prepare_input_stage34.py",
+        "8"
+      ],
+      "returncode": 0,
+      "duration_ms": 89,
+      "stdout": "OK: Prepared Stage 3.4 circuit input: C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\input_sample_8.json\n   Sample: SmallTop3Margin\n   Score: 755662630\n   y_hat: 1\n   Semantic-group Exact SHAP phi_int sorted by abs:\n   * [1] Group 3 ConnectionState     : phi=-197,551,827, abs=197,551,827\n   * [2] Group 1 Protocol            : phi=168,539,528, abs=168,539,528\n   * [3] Group 4 Ports               : phi=51,277,625, abs=51,277,625\n     [4] Group 2 Application         : phi=-51,277,283, abs=51,277,283\n     [5] Group 5 TrafficVolume       : phi=22,635,620, abs=22,635,620\n   Top-3 Exact SHAP groups (public): [3, 1, 4]\n   Other 2 groups (private):        [2, 5]\n",
+      "stderr": "",
+      "step": "prepare_input_sample_8",
+      "status": "PASS"
     }
   ],
   "circuit_stats": {
@@ -27,7 +138,7 @@
     "r1cs_bytes": 1283048,
     "wasm_bytes": 99582,
     "zkey_bytes": 4573072,
-    "vkey_bytes": 22671
+    "vkey_bytes": 22669
   },
   "sample_results": [
     {
@@ -42,7 +153,7 @@
             "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\witness_sample_1.wtns"
           ],
           "returncode": 0,
-          "duration_ms": 80,
+          "duration_ms": 64,
           "stdout": "",
           "stderr": "",
           "step": "witness_sample_1",
@@ -60,7 +171,7 @@
             "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\public_stage34_sample_1.json"
           ],
           "returncode": 0,
-          "duration_ms": 1090,
+          "duration_ms": 1280,
           "stdout": "",
           "stderr": "",
           "step": "prove_sample_1",
@@ -77,7 +188,7 @@
             "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\proof_stage34_sample_1.json"
           ],
           "returncode": 0,
-          "duration_ms": 672,
+          "duration_ms": 711,
           "stdout": "\u001b[32;22m[INFO]  \u001b[39;1msnarkJS\u001b[0m: OK!\n",
           "stderr": "",
           "step": "verify_sample_1",
@@ -88,7 +199,7 @@
         "witness": "circuits\\exact_shap_top3\\build\\witness_sample_1.wtns",
         "witness_bytes": 258572,
         "proof": "outputs\\proofs\\proof_stage34_sample_1.json",
-        "proof_bytes": 802,
+        "proof_bytes": 805,
         "public": "outputs\\proofs\\public_stage34_sample_1.json",
         "public_bytes": 1178,
         "public_signal_count": 109
@@ -106,7 +217,7 @@
             "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\witness_sample_2.wtns"
           ],
           "returncode": 0,
-          "duration_ms": 63,
+          "duration_ms": 58,
           "stdout": "",
           "stderr": "",
           "step": "witness_sample_2",
@@ -124,7 +235,7 @@
             "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\public_stage34_sample_2.json"
           ],
           "returncode": 0,
-          "duration_ms": 1083,
+          "duration_ms": 1248,
           "stdout": "",
           "stderr": "",
           "step": "prove_sample_2",
@@ -141,7 +252,7 @@
             "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\proof_stage34_sample_2.json"
           ],
           "returncode": 0,
-          "duration_ms": 605,
+          "duration_ms": 817,
           "stdout": "\u001b[32;22m[INFO]  \u001b[39;1msnarkJS\u001b[0m: OK!\n",
           "stderr": "",
           "step": "verify_sample_2",
@@ -152,7 +263,7 @@
         "witness": "circuits\\exact_shap_top3\\build\\witness_sample_2.wtns",
         "witness_bytes": 258572,
         "proof": "outputs\\proofs\\proof_stage34_sample_2.json",
-        "proof_bytes": 806,
+        "proof_bytes": 800,
         "public": "outputs\\proofs\\public_stage34_sample_2.json",
         "public_bytes": 1178,
         "public_signal_count": 109
@@ -170,7 +281,7 @@
             "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\witness_sample_3.wtns"
           ],
           "returncode": 0,
-          "duration_ms": 61,
+          "duration_ms": 63,
           "stdout": "",
           "stderr": "",
           "step": "witness_sample_3",
@@ -188,7 +299,7 @@
             "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\public_stage34_sample_3.json"
           ],
           "returncode": 0,
-          "duration_ms": 1006,
+          "duration_ms": 1009,
           "stdout": "",
           "stderr": "",
           "step": "prove_sample_3",
@@ -205,7 +316,7 @@
             "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\proof_stage34_sample_3.json"
           ],
           "returncode": 0,
-          "duration_ms": 605,
+          "duration_ms": 630,
           "stdout": "\u001b[32;22m[INFO]  \u001b[39;1msnarkJS\u001b[0m: OK!\n",
           "stderr": "",
           "step": "verify_sample_3",
@@ -216,8 +327,328 @@
         "witness": "circuits\\exact_shap_top3\\build\\witness_sample_3.wtns",
         "witness_bytes": 258572,
         "proof": "outputs\\proofs\\proof_stage34_sample_3.json",
-        "proof_bytes": 803,
+        "proof_bytes": 806,
         "public": "outputs\\proofs\\public_stage34_sample_3.json",
+        "public_bytes": 1178,
+        "public_signal_count": 109
+      }
+    },
+    {
+      "sample": 4,
+      "steps": [
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\exact_shap_top3_js\\generate_witness.js",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\exact_shap_top3_js\\exact_shap_top3.wasm",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\input_sample_4.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\witness_sample_4.wtns"
+          ],
+          "returncode": 0,
+          "duration_ms": 65,
+          "stdout": "",
+          "stderr": "",
+          "step": "witness_sample_4",
+          "status": "PASS"
+        },
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\node_modules\\snarkjs\\cli.js",
+            "groth16",
+            "prove",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\exact_shap_top3_final.zkey",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\witness_sample_4.wtns",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\proof_stage34_sample_4.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\public_stage34_sample_4.json"
+          ],
+          "returncode": 0,
+          "duration_ms": 1365,
+          "stdout": "",
+          "stderr": "",
+          "step": "prove_sample_4",
+          "status": "PASS"
+        },
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\node_modules\\snarkjs\\cli.js",
+            "groth16",
+            "verify",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\verification_key.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\public_stage34_sample_4.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\proof_stage34_sample_4.json"
+          ],
+          "returncode": 0,
+          "duration_ms": 915,
+          "stdout": "\u001b[32;22m[INFO]  \u001b[39;1msnarkJS\u001b[0m: OK!\n",
+          "stderr": "",
+          "step": "verify_sample_4",
+          "status": "PASS"
+        }
+      ],
+      "artifacts": {
+        "witness": "circuits\\exact_shap_top3\\build\\witness_sample_4.wtns",
+        "witness_bytes": 258572,
+        "proof": "outputs\\proofs\\proof_stage34_sample_4.json",
+        "proof_bytes": 807,
+        "public": "outputs\\proofs\\public_stage34_sample_4.json",
+        "public_bytes": 1178,
+        "public_signal_count": 109
+      }
+    },
+    {
+      "sample": 5,
+      "steps": [
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\exact_shap_top3_js\\generate_witness.js",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\exact_shap_top3_js\\exact_shap_top3.wasm",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\input_sample_5.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\witness_sample_5.wtns"
+          ],
+          "returncode": 0,
+          "duration_ms": 72,
+          "stdout": "",
+          "stderr": "",
+          "step": "witness_sample_5",
+          "status": "PASS"
+        },
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\node_modules\\snarkjs\\cli.js",
+            "groth16",
+            "prove",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\exact_shap_top3_final.zkey",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\witness_sample_5.wtns",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\proof_stage34_sample_5.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\public_stage34_sample_5.json"
+          ],
+          "returncode": 0,
+          "duration_ms": 1102,
+          "stdout": "",
+          "stderr": "",
+          "step": "prove_sample_5",
+          "status": "PASS"
+        },
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\node_modules\\snarkjs\\cli.js",
+            "groth16",
+            "verify",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\verification_key.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\public_stage34_sample_5.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\proof_stage34_sample_5.json"
+          ],
+          "returncode": 0,
+          "duration_ms": 618,
+          "stdout": "\u001b[32;22m[INFO]  \u001b[39;1msnarkJS\u001b[0m: OK!\n",
+          "stderr": "",
+          "step": "verify_sample_5",
+          "status": "PASS"
+        }
+      ],
+      "artifacts": {
+        "witness": "circuits\\exact_shap_top3\\build\\witness_sample_5.wtns",
+        "witness_bytes": 258572,
+        "proof": "outputs\\proofs\\proof_stage34_sample_5.json",
+        "proof_bytes": 802,
+        "public": "outputs\\proofs\\public_stage34_sample_5.json",
+        "public_bytes": 1178,
+        "public_signal_count": 109
+      }
+    },
+    {
+      "sample": 6,
+      "steps": [
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\exact_shap_top3_js\\generate_witness.js",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\exact_shap_top3_js\\exact_shap_top3.wasm",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\input_sample_6.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\witness_sample_6.wtns"
+          ],
+          "returncode": 0,
+          "duration_ms": 60,
+          "stdout": "",
+          "stderr": "",
+          "step": "witness_sample_6",
+          "status": "PASS"
+        },
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\node_modules\\snarkjs\\cli.js",
+            "groth16",
+            "prove",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\exact_shap_top3_final.zkey",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\witness_sample_6.wtns",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\proof_stage34_sample_6.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\public_stage34_sample_6.json"
+          ],
+          "returncode": 0,
+          "duration_ms": 1085,
+          "stdout": "",
+          "stderr": "",
+          "step": "prove_sample_6",
+          "status": "PASS"
+        },
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\node_modules\\snarkjs\\cli.js",
+            "groth16",
+            "verify",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\verification_key.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\public_stage34_sample_6.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\proof_stage34_sample_6.json"
+          ],
+          "returncode": 0,
+          "duration_ms": 618,
+          "stdout": "\u001b[32;22m[INFO]  \u001b[39;1msnarkJS\u001b[0m: OK!\n",
+          "stderr": "",
+          "step": "verify_sample_6",
+          "status": "PASS"
+        }
+      ],
+      "artifacts": {
+        "witness": "circuits\\exact_shap_top3\\build\\witness_sample_6.wtns",
+        "witness_bytes": 258572,
+        "proof": "outputs\\proofs\\proof_stage34_sample_6.json",
+        "proof_bytes": 806,
+        "public": "outputs\\proofs\\public_stage34_sample_6.json",
+        "public_bytes": 1178,
+        "public_signal_count": 109
+      }
+    },
+    {
+      "sample": 7,
+      "steps": [
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\exact_shap_top3_js\\generate_witness.js",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\exact_shap_top3_js\\exact_shap_top3.wasm",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\input_sample_7.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\witness_sample_7.wtns"
+          ],
+          "returncode": 0,
+          "duration_ms": 59,
+          "stdout": "",
+          "stderr": "",
+          "step": "witness_sample_7",
+          "status": "PASS"
+        },
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\node_modules\\snarkjs\\cli.js",
+            "groth16",
+            "prove",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\exact_shap_top3_final.zkey",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\witness_sample_7.wtns",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\proof_stage34_sample_7.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\public_stage34_sample_7.json"
+          ],
+          "returncode": 0,
+          "duration_ms": 1029,
+          "stdout": "",
+          "stderr": "",
+          "step": "prove_sample_7",
+          "status": "PASS"
+        },
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\node_modules\\snarkjs\\cli.js",
+            "groth16",
+            "verify",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\verification_key.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\public_stage34_sample_7.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\proof_stage34_sample_7.json"
+          ],
+          "returncode": 0,
+          "duration_ms": 639,
+          "stdout": "\u001b[32;22m[INFO]  \u001b[39;1msnarkJS\u001b[0m: OK!\n",
+          "stderr": "",
+          "step": "verify_sample_7",
+          "status": "PASS"
+        }
+      ],
+      "artifacts": {
+        "witness": "circuits\\exact_shap_top3\\build\\witness_sample_7.wtns",
+        "witness_bytes": 258572,
+        "proof": "outputs\\proofs\\proof_stage34_sample_7.json",
+        "proof_bytes": 805,
+        "public": "outputs\\proofs\\public_stage34_sample_7.json",
+        "public_bytes": 1178,
+        "public_signal_count": 109
+      }
+    },
+    {
+      "sample": 8,
+      "steps": [
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\exact_shap_top3_js\\generate_witness.js",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\exact_shap_top3_js\\exact_shap_top3.wasm",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\input_sample_8.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\witness_sample_8.wtns"
+          ],
+          "returncode": 0,
+          "duration_ms": 61,
+          "stdout": "",
+          "stderr": "",
+          "step": "witness_sample_8",
+          "status": "PASS"
+        },
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\node_modules\\snarkjs\\cli.js",
+            "groth16",
+            "prove",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\exact_shap_top3_final.zkey",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\witness_sample_8.wtns",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\proof_stage34_sample_8.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\public_stage34_sample_8.json"
+          ],
+          "returncode": 0,
+          "duration_ms": 1033,
+          "stdout": "",
+          "stderr": "",
+          "step": "prove_sample_8",
+          "status": "PASS"
+        },
+        {
+          "cmd": [
+            "node",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\node_modules\\snarkjs\\cli.js",
+            "groth16",
+            "verify",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\circuits\\exact_shap_top3\\build\\verification_key.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\public_stage34_sample_8.json",
+            "C:\\Paper\\Masters thesis\\stage3_zk\\outputs\\proofs\\proof_stage34_sample_8.json"
+          ],
+          "returncode": 0,
+          "duration_ms": 657,
+          "stdout": "\u001b[32;22m[INFO]  \u001b[39;1msnarkJS\u001b[0m: OK!\n",
+          "stderr": "",
+          "step": "verify_sample_8",
+          "status": "PASS"
+        }
+      ],
+      "artifacts": {
+        "witness": "circuits\\exact_shap_top3\\build\\witness_sample_8.wtns",
+        "witness_bytes": 258572,
+        "proof": "outputs\\proofs\\proof_stage34_sample_8.json",
+        "proof_bytes": 805,
+        "public": "outputs\\proofs\\public_stage34_sample_8.json",
         "public_bytes": 1178,
         "public_signal_count": 109
       }

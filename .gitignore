@@ -95,6 +95,41 @@ node_modules/
 *.7z
 *.rar
 
+# Local test, type-checking, linting, and coverage caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.hypothesis/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+
+# Generated numerical intermediates (including thesis-extra diagnostics)
+*.npz
+outputs/thesis_extra/
+
+# Package-manager diagnostics
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local editor / notebook runtime state
+.jupyter/
+.ipython/
+
+# Private environment variants and credentials; keep safe templates shareable
+.env.*
+!.env.example
+!.env.template
+*.pem
+*.key
+*.p12
+*.pfx
+
 # Ignore secrets
 *.env
 secrets.json

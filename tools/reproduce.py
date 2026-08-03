@@ -14,6 +14,7 @@ Usage (from repo root):
     python tools/reproduce.py metrics
     python tools/reproduce.py eval
     python tools/reproduce.py drift
+    python tools/reproduce.py quant-agreement
   python tools/reproduce.py zk --stage all --samples 1,2,3
   python tools/reproduce.py zk --stage 33 --build
 
@@ -198,6 +199,95 @@ def run_semantic_group_ablation() -> int:
     return int(proc.returncode)
 
 
+def run_quantized_lr_agreement(*, splits: str, chunk_size: int, max_examples: int) -> int:
+    script = os.path.join(REPO_ROOT, "tools", "eval_float_quantized_lr_agreement.py")
+    if not os.path.exists(script):
+        print(f"Missing float-vs-quantized LR agreement script: {script}")
+        return 1
+
+    cmd = [
+        sys.executable,
+        script,
+        "--splits",
+        str(splits),
+        "--chunk-size",
+        str(int(chunk_size)),
+        "--max-examples",
+        str(int(max_examples)),
+    ]
+    proc = subprocess.run(cmd, cwd=REPO_ROOT)
+    return int(proc.returncode)
+
+
+def run_ranking_margin(*, splits: str, chunk_size: int, max_examples: int) -> int:
+    script = os.path.join(REPO_ROOT, "tools", "analyze_exact_shap_ranking_margin.py")
+    if not os.path.exists(script):
+        print(f"Missing Exact SHAP ranking margin script: {script}")
+        return 1
+
+    cmd = [
+        sys.executable,
+        script,
+        "--splits",
+        str(splits),
+        "--chunk-size",
+        str(int(chunk_size)),
+        "--max-examples",
+        str(int(max_examples)),
+    ]
+    proc = subprocess.run(cmd, cwd=REPO_ROOT)
+    return int(proc.returncode)
+
+
+def run_filewise_holdout(
+    *,
+    sample_frac: float,
+    holdout_count: int,
+    max_train_rows: int,
+    max_holdout_rows: int,
+) -> int:
+    script = os.path.join(REPO_ROOT, "tools", "eval_filewise_holdout.py")
+    if not os.path.exists(script):
+        print(f"Missing file-wise holdout script: {script}")
+        return 1
+
+    cmd = [
+        sys.executable,
+        script,
+        "--sample-frac",
+        str(float(sample_frac)),
+        "--holdout-count",
+        str(int(holdout_count)),
+        "--max-train-rows",
+        str(int(max_train_rows)),
+        "--max-holdout-rows",
+        str(int(max_holdout_rows)),
+    ]
+    proc = subprocess.run(cmd, cwd=REPO_ROOT)
+    return int(proc.returncode)
+
+
+def run_attack_type_errors(*, min_count: int) -> int:
+    script = os.path.join(REPO_ROOT, "tools", "eval_attack_type_errors.py")
+    if not os.path.exists(script):
+        print(f"Missing attack-type error script: {script}")
+        return 1
+
+    cmd = [sys.executable, script, "--min-count", str(int(min_count))]
+    proc = subprocess.run(cmd, cwd=REPO_ROOT)
+    return int(proc.returncode)
+
+
+def run_source_truth() -> int:
+    script = os.path.join(REPO_ROOT, "tools", "generate_final_numbers_source_of_truth.py")
+    if not os.path.exists(script):
+        print(f"Missing final source-of-truth script: {script}")
+        return 1
+
+    proc = subprocess.run([sys.executable, script], cwd=REPO_ROOT)
+    return int(proc.returncode)
+
+
 def run_zk_scaling_benchmark(*, stage: str, sample: int, runs: int, warmup: int, clean_first: bool) -> int:
     script = os.path.join(REPO_ROOT, "tools", "eval_zk_scaling_benchmark.py")
     if not os.path.exists(script):
@@ -237,6 +327,39 @@ def run_zk_stage34(*, samples: str, force_setup: bool) -> int:
     return int(proc.returncode)
 
 
+def run_stage34_vectors() -> int:
+    script = os.path.join(STAGE3_ZK_DIR, "scripts", "stage 3.4", "00_select_diverse_test_vectors.py")
+    if not os.path.exists(script):
+        print(f"Missing Stage 3.4 vector selector: {script}")
+        return 1
+
+    proc = subprocess.run([sys.executable, script], cwd=REPO_ROOT)
+    return int(proc.returncode)
+
+
+def run_stage34_batch_smoke(*, samples: int, prove: int, seed: int, keep_artifacts: bool) -> int:
+    script = os.path.join(STAGE3_ZK_DIR, "scripts", "stage 3.4", "05_batch_smoke_stage34.py")
+    if not os.path.exists(script):
+        print(f"Missing Stage 3.4 batch smoke script: {script}")
+        return 1
+
+    cmd = [
+        sys.executable,
+        script,
+        "--samples",
+        str(int(samples)),
+        "--prove",
+        str(int(prove)),
+        "--seed",
+        str(int(seed)),
+    ]
+    if keep_artifacts:
+        cmd.append("--keep-artifacts")
+
+    proc = subprocess.run(cmd, cwd=REPO_ROOT)
+    return int(proc.returncode)
+
+
 def run_cost_based_thresholds(*, ratios: str) -> int:
     script = os.path.join(REPO_ROOT, "tools", "eval_cost_based_thresholds.py")
     if not os.path.exists(script):
@@ -257,6 +380,14 @@ def run_all_eval(
     ece_bins: int,
     chunks: int,
     ratios: str,
+    quant_splits: str,
+    quant_chunk_size: int,
+    quant_max_examples: int,
+    file_holdout_sample_frac: float,
+    file_holdout_count: int,
+    file_holdout_max_train_rows: int,
+    file_holdout_max_holdout_rows: int,
+    attack_type_min_count: int,
     include_zk_scale: bool,
     zk_stage: str,
     zk_sample: int,
@@ -269,7 +400,27 @@ def run_all_eval(
         ("eval", lambda: run_decision_eval(low_fpr=low_fpr, high_recall=high_recall, ece_bins=ece_bins)),
         ("drift", lambda: run_drift_eval(chunks=chunks)),
         ("semantic-groups", run_semantic_group_ablation),
+        (
+            "quant-agreement",
+            lambda: run_quantized_lr_agreement(
+                splits=quant_splits,
+                chunk_size=quant_chunk_size,
+                max_examples=quant_max_examples,
+            ),
+        ),
+        ("ranking-margin", lambda: run_ranking_margin(splits=quant_splits, chunk_size=quant_chunk_size, max_examples=quant_max_examples)),
+        (
+            "file-holdout",
+            lambda: run_filewise_holdout(
+                sample_frac=file_holdout_sample_frac,
+                holdout_count=file_holdout_count,
+                max_train_rows=file_holdout_max_train_rows,
+                max_holdout_rows=file_holdout_max_holdout_rows,
+            ),
+        ),
+        ("attack-types", lambda: run_attack_type_errors(min_count=attack_type_min_count)),
         ("cost", lambda: run_cost_based_thresholds(ratios=ratios)),
+        ("source-truth", run_source_truth),
     ]
 
     if include_zk_scale:
@@ -347,6 +498,56 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Semantic-group ablation: compare raw group frequency vs size-normalized frequency (writes figures + MD report).",
     )
 
+    quant = sub.add_parser(
+        "quant-agreement",
+        help="Compare float sklearn LR with the quantized integer LR used by Stage 3 circuits.",
+    )
+    quant.add_argument("--splits", default="val,test", help="Comma-separated splits to evaluate.")
+    quant.add_argument("--chunk-size", type=int, default=50000, help="Rows per chunk.")
+    quant.add_argument("--max-examples", type=int, default=20, help="Maximum mismatch examples to store.")
+
+    margin = sub.add_parser(
+        "ranking-margin",
+        help="Analyze the Exact SHAP top-3 rank-3 vs rank-4 margin for Stage 3.4.",
+    )
+    margin.add_argument("--splits", default="val,test", help="Comma-separated splits to evaluate.")
+    margin.add_argument("--chunk-size", type=int, default=50000, help="Rows per chunk.")
+    margin.add_argument("--max-examples", type=int, default=20, help="Number of smallest-margin examples to store.")
+
+    file_holdout = sub.add_parser(
+        "file-holdout",
+        help="File-wise holdout robustness check: train on earlier-numbered files, test on held-out later files.",
+    )
+    file_holdout.add_argument("--sample-frac", type=float, default=0.05, help="Per-file sampling fraction.")
+    file_holdout.add_argument("--holdout-count", type=int, default=4, help="Number of later-numbered files to hold out.")
+    file_holdout.add_argument("--max-train-rows", type=int, default=400000, help="Cap sampled train/val rows before splitting.")
+    file_holdout.add_argument("--max-holdout-rows", type=int, default=250000, help="Cap held-out evaluation rows.")
+
+    attack_types = sub.add_parser(
+        "attack-types",
+        help="Post-hoc false-negative analysis by TON_IoT attack type without using type for training.",
+    )
+    attack_types.add_argument("--min-count", type=int, default=100, help="Minimum true-attack rows per type to report.")
+
+    sub.add_parser(
+        "source-truth",
+        help="Generate reports/final_numbers_source_of_truth.md from current JSON artifacts.",
+    )
+
+    sub.add_parser(
+        "stage34-vectors",
+        help="Select diverse Stage 3.4 test vectors 4-8 from the processed test split.",
+    )
+
+    stage34_batch = sub.add_parser(
+        "stage34-batch-smoke",
+        help="Run a deterministic label-balanced Stage 3.4 witness/prove/verify smoke test.",
+    )
+    stage34_batch.add_argument("--samples", type=int, default=30, help="Number of deterministic batch rows to select.")
+    stage34_batch.add_argument("--prove", type=int, default=30, help="Number of selected rows to prove and verify.")
+    stage34_batch.add_argument("--seed", type=int, default=34030, help="Deterministic RNG seed for row selection.")
+    stage34_batch.add_argument("--keep-artifacts", action="store_true", help="Keep temporary batch input/witness/proof/public files.")
+
     zk_scale = sub.add_parser(
         "zk-scale",
         help="ZK scaling benchmark: repeated witness/prove/verify timings with p50/p95 summary (writes JSON+MD under stage3_zk/reports).",
@@ -364,8 +565,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     zk_stage34.add_argument(
         "--samples",
         nargs="+",
-        default=["1,2,3"],
-        help="Stage 3 test sample IDs. Accepts '1,2,3' or PowerShell-split '1 2 3'.",
+        default=["1,2,3,4,5,6,7,8"],
+        help="Stage 3.4 test sample IDs. Accepts '1,2,3,4,5,6,7,8' or PowerShell-split values.",
     )
     zk_stage34.add_argument("--force-setup", action="store_true", help="Regenerate Stage 3.4 zkey and verification key.")
 
@@ -397,6 +598,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         default="0.25,0.5,1,2,5,10,20,50,100",
         help="Comma-separated FN/FP ratios for cost-based thresholds (quote this string in PowerShell).",
     )
+    all_eval.add_argument("--quant-splits", default="val,test", help="Splits for float-vs-quantized LR agreement.")
+    all_eval.add_argument("--quant-chunk-size", type=int, default=50000, help="Rows per chunk for quant agreement.")
+    all_eval.add_argument("--quant-max-examples", type=int, default=20, help="Max mismatch examples for quant agreement.")
+    all_eval.add_argument("--file-holdout-sample-frac", type=float, default=0.05, help="Per-file sample fraction for file-holdout.")
+    all_eval.add_argument("--file-holdout-count", type=int, default=4, help="Number of later-numbered files to hold out.")
+    all_eval.add_argument("--file-holdout-max-train-rows", type=int, default=400000, help="Max train/val rows for file-holdout.")
+    all_eval.add_argument("--file-holdout-max-holdout-rows", type=int, default=250000, help="Max held-out rows for file-holdout.")
+    all_eval.add_argument("--attack-type-min-count", type=int, default=100, help="Minimum true-attack rows per type.")
     all_eval.add_argument("--include-zk-scale", action="store_true", help="Also run the ZK scaling benchmark (slower).")
     all_eval.add_argument("--zk-stage", default="33", choices=["31", "32", "33"], help="ZK benchmark stage.")
     all_eval.add_argument("--zk-sample", type=int, default=1, choices=[1, 2, 3], help="ZK benchmark sample.")
@@ -435,6 +644,45 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.cmd == "semantic-groups":
         return run_semantic_group_ablation()
 
+    if args.cmd == "quant-agreement":
+        return run_quantized_lr_agreement(
+            splits=str(args.splits),
+            chunk_size=int(args.chunk_size),
+            max_examples=int(args.max_examples),
+        )
+
+    if args.cmd == "ranking-margin":
+        return run_ranking_margin(
+            splits=str(args.splits),
+            chunk_size=int(args.chunk_size),
+            max_examples=int(args.max_examples),
+        )
+
+    if args.cmd == "file-holdout":
+        return run_filewise_holdout(
+            sample_frac=float(args.sample_frac),
+            holdout_count=int(args.holdout_count),
+            max_train_rows=int(args.max_train_rows),
+            max_holdout_rows=int(args.max_holdout_rows),
+        )
+
+    if args.cmd == "attack-types":
+        return run_attack_type_errors(min_count=int(args.min_count))
+
+    if args.cmd == "source-truth":
+        return run_source_truth()
+
+    if args.cmd == "stage34-vectors":
+        return run_stage34_vectors()
+
+    if args.cmd == "stage34-batch-smoke":
+        return run_stage34_batch_smoke(
+            samples=int(args.samples),
+            prove=int(args.prove),
+            seed=int(args.seed),
+            keep_artifacts=bool(args.keep_artifacts),
+        )
+
     if args.cmd == "metrics":
         return run_baseline_metrics(criterion=str(args.criterion), tune_on=str(args.tune_on))
 
@@ -469,6 +717,14 @@ def main(argv: Sequence[str] | None = None) -> int:
             ece_bins=int(args.ece_bins),
             chunks=int(args.chunks),
             ratios=str(args.ratios),
+            quant_splits=str(args.quant_splits),
+            quant_chunk_size=int(args.quant_chunk_size),
+            quant_max_examples=int(args.quant_max_examples),
+            file_holdout_sample_frac=float(args.file_holdout_sample_frac),
+            file_holdout_count=int(args.file_holdout_count),
+            file_holdout_max_train_rows=int(args.file_holdout_max_train_rows),
+            file_holdout_max_holdout_rows=int(args.file_holdout_max_holdout_rows),
+            attack_type_min_count=int(args.attack_type_min_count),
             include_zk_scale=bool(args.include_zk_scale),
             zk_stage=str(args.zk_stage),
             zk_sample=int(args.zk_sample),
